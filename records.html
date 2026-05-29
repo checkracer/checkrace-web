@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สถิตินักวิ่ง — Checkrace | Runner Records</title>
+<meta name="description" content="ค้นหาสถิติส่วนตัวของนักวิ่ง — สถิติที่ดีที่สุด (PB) ทุกระยะ และประวัติการแข่งขันทุกสนามที่จับเวลาโดย Checkrace">
+<link rel="icon" href="/assets/images/mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<style>.ev-badge{display:inline-block;padding:2px 9px;border-radius:999px;background:var(--red-50);color:var(--red-dark);font-size:.78rem;font-weight:500;white-space:nowrap}</style>
+</head>
+<body data-page="records">
+<div id="cr-header"></div>
+
+<section class="hero" style="padding:56px 0 32px">
+  <div class="container">
+    <span class="eyebrow" data-th="สถิตินักวิ่ง" data-en="Runner records">สถิตินักวิ่ง</span>
+    <h1 data-th="ค้นหาสถิติ <span>ของนักวิ่ง</span>" data-en="Find a <span>runner’s record</span>" data-html>ค้นหาสถิติ <span>ของนักวิ่ง</span></h1>
+    <p class="lead" data-th="พิมพ์ชื่อนักวิ่ง เพื่อดูสถิติที่ดีที่สุด (PB) ทุกระยะ และประวัติการแข่งขันทุกสนามที่จับเวลาโดย Checkrace" data-en="Type a runner’s name to see their PBs across distances and full race history timed by Checkrace.">พิมพ์ชื่อนักวิ่ง เพื่อดูสถิติที่ดีที่สุด (PB) ทุกระยะ และประวัติการแข่งขันทุกสนามที่จับเวลาโดย Checkrace</p>
+    <div class="toolbar" style="margin-top:20px">
+      <input id="rSearch" style="min-width:300px" data-th-ph="พิมพ์ชื่อ-นามสกุล นักวิ่ง" data-en-ph="Type runner full name" placeholder="พิมพ์ชื่อ-นามสกุล นักวิ่ง">
+      <button class="btn btn-primary" id="rBtn" data-th="ค้นหา" data-en="Search">ค้นหา</button>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:10px">
+  <div class="container">
+    <div id="recHost">
+      <div class="state" data-th="พิมพ์ชื่อนักวิ่งด้านบนเพื่อเริ่มค้นหา" data-en="Type a runner name above to begin.">พิมพ์ชื่อนักวิ่งด้านบนเพื่อเริ่มค้นหา</div>
+    </div>
+  </div>
+</section>
+
+<div id="cr-footer"></div>
+
+<script src="/assets/js/jsonp.js"></script>
+<script src="/assets/js/race-data.js"></script>
+<script src="/assets/js/site.js"></script>
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id);};
+  var allP=null;
+  function en(){return window.CR&&CR.lang==='en';}
+
+  function ensureData(){
+    if(!allP) allP=RACE.fetchAllResults();
+    return allP;
+  }
+
+  function search(){
+    var q=($('rSearch').value||'').trim().toLowerCase();
+    if(q.length<2){$('recHost').innerHTML='<div class="state">'+(en()?'Please type at least 2 characters.':'กรุณาพิมพ์อย่างน้อย 2 ตัวอักษร')+'</div>';return;}
+    $('recHost').innerHTML='<div class="state"><div class="spinner"></div>'+(en()?'Searching…':'กำลังค้นหา…')+'</div>';
+    ensureData().then(function(rows){
+      var hits=rows.filter(function(r){
+        var nm=((r.first_name||'')+' '+(r.last_name||'')).toLowerCase();
+        return nm.indexOf(q)>=0 || String(r.bib_no||'').toLowerCase()===q;
+      });
+      if(!hits.length){$('recHost').innerHTML='<div class="state">'+(en()?'No runner found for “':'ไม่พบนักวิ่ง “')+q+'”.</div>';return;}
+      // group by exact full name
+      var groups={};
+      hits.forEach(function(r){
+        var key=((r.first_name||'')+' '+(r.last_name||'')).trim().toUpperCase();
+        (groups[key]=groups[key]||[]).push(r);
+      });
+      var names=Object.keys(groups).sort(function(a,b){return groups[b].length-groups[a].length;});
+      var html='';
+      if(names.length>1){
+        html+='<p class="text-muted" style="margin-bottom:18px">'+(en()?'Found ':'พบ ')+names.length+(en()?' matching names — showing all.':' ชื่อที่ตรงกัน — แสดงทั้งหมด')+'</p>';
+      }
+      names.slice(0,8).forEach(function(nm){ html+=renderRunner(nm,groups[nm]); });
+      $('recHost').innerHTML=html;
+    }).catch(function(e){
+      $('recHost').innerHTML='<div class="state">'+(en()?'Could not load data. Try again.':'โหลดข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง')+'<br><small>'+e.message+'</small></div>';
+    });
+  }
+
+  function renderRunner(name,recs){
+    // sort by year desc then time
+    recs.sort(function(a,b){
+      var ma=RACE.EVENT_META[a.event],mb=RACE.EVENT_META[b.event];
+      var ya=ma?ma.year:0, yb=mb?mb.year:0;
+      return (yb-ya)||(RACE.bestTime(a)-RACE.bestTime(b));
+    });
+    var events={},series={},gender=recs[0].gender||'',nat=recs[0].nationality||'';
+    recs.forEach(function(r){events[r.event]=1;series[RACE.getSeries(r.event)]=1;});
+    // PB per distance bucket
+    var pb={};
+    recs.forEach(function(r){
+      var b=RACE.distBucket(parseFloat(r.distance)||0);
+      var t=RACE.bestTime(r);
+      if(t>=999000) return;
+      if(!pb[b]||t<pb[b].t){pb[b]={t:t,str:RACE.bestTimeStr(r),event:r.event};}
+    });
+    var order=[42.195,21.1,10,5];
+    var pbCards=order.filter(function(d){return pb[d];}).map(function(d){
+      return '<div class="rec-box"><div class="stat-label">'+RACE.distLabel(d)+' PB</div>'+
+             '<div class="stat-num" style="font-size:1.5rem">'+RACE.secToTime(pb[d].t)+'</div>'+
+             '<div class="stat-label">'+pb[d].event+'</div></div>';
+    }).join('');
+    if(!pbCards) pbCards='<div class="rec-box"><div class="stat-label">'+(en()?'No valid finish time':'ไม่มีเวลาที่สมบูรณ์')+'</div></div>';
+
+    var rows=recs.map(function(r){
+      var m=RACE.EVENT_META[r.event];
+      return '<tr><td>'+(m?m.year:'')+'</td>'+
+             '<td>'+RACE.evBadge(r.event)+'</td>'+
+             '<td>'+RACE.distLabel(r.distance)+'</td>'+
+             '<td>'+(r.bib_no||'')+'</td>'+
+             '<td>'+RACE.bestTimeStr(r)+'</td>'+
+             '<td>'+(r.category||'')+'</td>'+
+             '<td>'+(r.status||'Finish')+'</td></tr>';
+    }).join('');
+
+    return ''+
+    '<div class="card" style="margin-bottom:28px">'+
+      '<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;align-items:center">'+
+        '<h2 style="margin:0">'+name+' '+RACE.natFlag(nat)+'</h2>'+
+        '<span class="badge">'+(gender==='F'?(en()?'Female':'หญิง'):(en()?'Male':'ชาย'))+'</span>'+
+      '</div>'+
+      '<div class="runner-summary">'+
+        '<div class="rec-box"><div class="stat-num" style="font-size:1.7rem">'+recs.length+'</div><div class="stat-label">'+(en()?'Races':'ครั้งที่ลงแข่ง')+'</div></div>'+
+        '<div class="rec-box"><div class="stat-num" style="font-size:1.7rem">'+Object.keys(events).length+'</div><div class="stat-label">'+(en()?'Events':'สนาม')+'</div></div>'+
+        '<div class="rec-box"><div class="stat-num" style="font-size:1.7rem">'+Object.keys(series).length+'</div><div class="stat-label">'+(en()?'Series':'ซีรีส์')+'</div></div>'+
+        '<div class="rec-box"><div class="stat-num" style="font-size:1.7rem">'+nat+'</div><div class="stat-label">'+(en()?'Nationality':'สัญชาติ')+'</div></div>'+
+      '</div>'+
+      '<h3 style="margin:6px 0 12px">'+(en()?'Personal Bests':'สถิติส่วนตัวที่ดีที่สุด (PB)')+'</h3>'+
+      '<div class="runner-summary">'+pbCards+'</div>'+
+      '<h3 style="margin:18px 0 12px">'+(en()?'Race history':'ประวัติการแข่งขัน')+'</h3>'+
+      '<div class="table-wrap"><table class="data" style="min-width:560px"><thead><tr>'+
+        '<th>'+(en()?'Year':'ปี')+'</th><th>'+(en()?'Event':'สนาม')+'</th><th>'+(en()?'Distance':'ระยะ')+'</th>'+
+        '<th>BIB</th><th>'+(en()?'Time':'เวลา')+'</th><th>'+(en()?'Category':'รุ่น')+'</th><th>'+(en()?'Status':'สถานะ')+'</th>'+
+      '</tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '</div>';
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    if(!window.RACE) return;
+    $('rBtn').onclick=search;
+    $('rSearch').addEventListener('keydown',function(e){if(e.key==='Enter')search();});
+  });
+})();
+</script>
+</body>
+</html>

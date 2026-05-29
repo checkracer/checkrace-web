@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ผลการแข่งขัน — Checkrace | Race Results & Ranking</title>
+<meta name="description" content="ค้นหาผลการแข่งขันและจัดอันดับนักวิ่งจากงานวิ่งที่จับเวลาโดย Checkrace — กรองตามสนาม ระยะ เพศ และค้นหาชื่อ/BIB">
+<link rel="icon" href="/assets/images/mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/style.css">
+<style>
+.ev-badge{display:inline-block;padding:2px 9px;border-radius:999px;background:var(--red-50);color:var(--red-dark);font-size:.78rem;font-weight:500;white-space:nowrap}
+</style>
+</head>
+<body data-page="results">
+<div id="cr-header"></div>
+
+<section class="hero" style="padding:56px 0 32px">
+  <div class="container">
+    <span class="eyebrow" data-th="ผลการแข่งขัน" data-en="Race results">ผลการแข่งขัน</span>
+    <h1 data-th="ผลวิ่ง & การจัดอันดับ" data-en="Results & Ranking">ผลวิ่ง & การจัดอันดับ</h1>
+    <p class="lead" data-th="ข้อมูลสดจากระบบจับเวลาของ Checkrace — กรองตามสนาม ระยะ เพศ หรือค้นหาด้วยชื่อ/หมายเลข BIB" data-en="Live data from Checkrace timing — filter by event, distance, gender, or search by name / BIB.">ข้อมูลสดจากระบบจับเวลาของ Checkrace — กรองตามสนาม ระยะ เพศ หรือค้นหาด้วยชื่อ/หมายเลข BIB</p>
+  </div>
+</section>
+
+<section style="padding-top:20px">
+  <div class="container">
+    <!-- summary stats -->
+    <div class="grid grid-4" style="margin-bottom:24px">
+      <div class="rec-box"><div class="stat-num" id="sTot" style="font-size:1.7rem">–</div><div class="stat-label" data-th="ผลทั้งหมด" data-en="Results">ผลทั้งหมด</div></div>
+      <div class="rec-box"><div class="stat-num" id="sMale" style="font-size:1.7rem">–</div><div class="stat-label" data-th="ชาย" data-en="Male">ชาย</div></div>
+      <div class="rec-box"><div class="stat-num" id="sFem" style="font-size:1.7rem">–</div><div class="stat-label" data-th="หญิง" data-en="Female">หญิง</div></div>
+      <div class="rec-box"><div class="stat-num" id="sEv" style="font-size:1.7rem">–</div><div class="stat-label" data-th="สนาม" data-en="Events">สนาม</div></div>
+    </div>
+
+    <!-- toolbar -->
+    <div class="toolbar">
+      <select id="fGroup">
+        <option value="all" data-th="ทุกซีรีส์" data-en="All series">ทุกซีรีส์</option>
+        <option value="Scenic">Scenic</option>
+        <option value="Korat">Korat</option>
+        <option value="KhaoYai">Khao Yai</option>
+        <option value="UPLeague">UP League</option>
+      </select>
+      <select id="fEvent"><option value="all" data-th="ทุกสนาม" data-en="All events">ทุกสนาม</option></select>
+      <select id="fDist">
+        <option value="0" data-th="ทุกระยะ" data-en="All distances">ทุกระยะ</option>
+        <option value="42.195">42K (FM)</option>
+        <option value="21.1">21K (HM)</option>
+        <option value="10">10K</option>
+        <option value="5">5K</option>
+      </select>
+      <select id="fGender">
+        <option value="all" data-th="ทุกเพศ" data-en="All genders">ทุกเพศ</option>
+        <option value="M" data-th="ชาย" data-en="Male">ชาย</option>
+        <option value="F" data-th="หญิง" data-en="Female">หญิง</option>
+      </select>
+      <input id="fSearch" data-th-ph="ค้นหาชื่อ / BIB / สัญชาติ" data-en-ph="Search name / BIB / nationality" placeholder="ค้นหาชื่อ / BIB / สัญชาติ">
+      <button class="btn btn-outline" id="btnCsv" data-th="ดาวน์โหลด CSV" data-en="Download CSV">ดาวน์โหลด CSV</button>
+    </div>
+
+    <div id="tableHost">
+      <div class="state"><div class="spinner"></div><span data-th="กำลังโหลดข้อมูลผลวิ่ง…" data-en="Loading results…">กำลังโหลดข้อมูลผลวิ่ง…</span></div>
+    </div>
+    <div class="pager" id="pager" hidden></div>
+  </div>
+</section>
+
+<div id="cr-footer"></div>
+
+<script src="/assets/js/jsonp.js"></script>
+<script src="/assets/js/race-data.js"></script>
+<script src="/assets/js/site.js"></script>
+<script>
+(function(){
+  var state={group:'all',event:'all',distance:0,gender:'all',search:'',sortCol:'chip_time',sortDir:'asc',page:1,limit:100};
+  var $=function(id){return document.getElementById(id);};
+  var debounce;
+
+  function buildEventOptions(){
+    var sel=$('fEvent');
+    var meta=RACE.EVENT_META, keys=Object.keys(meta);
+    if(state.group!=='all') keys=keys.filter(function(k){return meta[k].series===state.group;});
+    keys.sort(function(a,b){return (meta[b].year-meta[a].year)||meta[a].name.localeCompare(meta[b].name);});
+    var en=(window.CR&&CR.lang==='en');
+    sel.innerHTML='<option value="all">'+(en?'All events':'ทุกสนาม')+'</option>'+
+      keys.map(function(k){return '<option value="'+k+'">'+meta[k].name+' '+meta[k].year+' ('+k+')</option>';}).join('');
+  }
+
+  function render(res){
+    $('sTot').textContent=RACE.fmtN(res.total);
+    $('sMale').textContent=RACE.fmtN(res.male);
+    $('sFem').textContent=RACE.fmtN(res.female);
+    $('sEv').textContent=RACE.fmtN(res.eventCount);
+    var en=(window.CR&&CR.lang==='en');
+    if(!res.rows.length){
+      $('tableHost').innerHTML='<div class="state">'+(en?'No results match your filters.':'ไม่พบผลที่ตรงกับเงื่อนไข')+'</div>';
+      $('pager').hidden=true; return;
+    }
+    var h='<div class="table-wrap"><table class="data"><thead><tr>'+
+      '<th>#</th><th>BIB</th><th>'+(en?'Name':'ชื่อ')+'</th><th>'+(en?'Sex':'เพศ')+'</th>'+
+      '<th>'+(en?'Nat':'สัญชาติ')+'</th><th>'+(en?'Distance':'ระยะ')+'</th>'+
+      '<th>'+(en?'Time':'เวลา')+'</th><th>'+(en?'Gun':'Gun')+'</th><th>'+(en?'Event':'สนาม')+'</th></tr></thead><tbody>';
+    res.rows.forEach(function(r){
+      h+='<tr><td class="rank-medal">'+r._rank+'</td>'+
+         '<td>'+(r.bib_no||'')+'</td>'+
+         '<td>'+((r.first_name||'')+' '+(r.last_name||'')).trim()+'</td>'+
+         '<td>'+(r.gender||'')+'</td>'+
+         '<td>'+RACE.natFlag(r.nationality)+'</td>'+
+         '<td>'+RACE.distLabel(r.distance)+'</td>'+
+         '<td>'+RACE.bestTimeStr(r)+'</td>'+
+         '<td>'+RACE.cleanGunStr(r)+'</td>'+
+         '<td>'+RACE.evBadge(r.event)+'</td></tr>';
+    });
+    h+='</tbody></table></div>';
+    $('tableHost').innerHTML=h;
+    // pager
+    var p=$('pager'); p.hidden=false;
+    p.innerHTML=
+      '<button id="pgPrev"'+(res.page<=1?' disabled':'')+'>‹ '+(en?'Prev':'ก่อนหน้า')+'</button>'+
+      '<span class="pg-info">'+(en?'Page ':'หน้า ')+res.page+'/'+res.totalPages+' · '+RACE.fmtN(res.total)+(en?' results':' รายการ')+'</span>'+
+      '<button id="pgNext"'+(res.page>=res.totalPages?' disabled':'')+'>'+(en?'Next':'ถัดไป')+' ›</button>';
+    var pv=$('pgPrev'),nx=$('pgNext');
+    if(pv) pv.onclick=function(){if(state.page>1){state.page--;load();}};
+    if(nx) nx.onclick=function(){if(state.page<res.totalPages){state.page++;load();}};
+  }
+
+  var last=null;
+  function load(){
+    RACE.fetchPage(state).then(function(res){last=res;render(res);})
+      .catch(function(e){
+        var en=(window.CR&&CR.lang==='en');
+        $('tableHost').innerHTML='<div class="state">'+(en?'Could not load results. Please try again.':'โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่')+'<br><small>'+e.message+'</small></div>';
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    if(!window.RACE){return;}
+    buildEventOptions();
+    $('fGroup').onchange=function(){state.group=this.value;state.event='all';state.page=1;buildEventOptions();load();};
+    $('fEvent').onchange=function(){state.event=this.value;state.page=1;load();};
+    $('fDist').onchange=function(){state.distance=parseFloat(this.value)||0;state.page=1;load();};
+    $('fGender').onchange=function(){state.gender=this.value;state.page=1;load();};
+    $('fSearch').oninput=function(){var v=this.value;clearTimeout(debounce);debounce=setTimeout(function(){state.search=v;state.page=1;load();},300);};
+    $('btnCsv').onclick=function(){exportCsv();};
+    load();
+  });
+  document.addEventListener('cr:langchange',function(){buildEventOptions();$('fEvent').value=state.event;if(last)render(last);});
+
+  function exportCsv(){
+    if(!last||!last.rows.length) return;
+    var head=['Rank','BIB','First','Last','Gender','Nationality','Distance','ChipTime','GunTime','Event'];
+    var lines=[head.join(',')];
+    last.rows.forEach(function(r){
+      lines.push([r._rank,r.bib_no,r.first_name,r.last_name,r.gender,r.nationality,r.distance,r.chip_time,r.gun_time,r.event]
+        .map(function(x){return '"'+String(x==null?'':x).replace(/"/g,'""')+'"';}).join(','));
+    });
+    var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='checkrace_results_p'+state.page+'.csv';a.click();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Checkrace">
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#DC2626"/>
+  <!-- stopwatch crown -->
+  <rect x="26" y="6" width="12" height="5" rx="2.5" fill="#fff"/>
+  <!-- dial ring -->
+  <circle cx="32" cy="37" r="19" fill="none" stroke="#fff" stroke-width="4"/>
+  <!-- check / motion mark -->
+  <path d="M23 38.5 L29.5 45 L43 28" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
