@@ -136,4 +136,4 @@ Cloudflare จะให้ URL preview เช่น `https://dev.checkrace-web.p
 
 ---
 
-© 2026 Race Up Work Co., Ltd.
+© 2026 Checkrace Co., Ltd.

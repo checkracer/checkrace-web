@@ -1,6 +1,6 @@
 # Checkrace Web — Running Solution Platform
 
-เว็บไซต์อย่างเป็นทางการของ **Checkrace** — แพลตฟอร์มจัดงานวิ่งครบวงจรของ Race Up Work Co., Ltd.
+เว็บไซต์อย่างเป็นทางการของ **Checkrace** — แพลตฟอร์มจัดงานวิ่งครบวงจรของ Checkrace Co., Ltd.
 
 ---
 
@@ -73,4 +73,4 @@ npx serve .
 
 ---
 
-© 2026 Race Up Work Co., Ltd.
+© 2026 Checkrace Co., Ltd.

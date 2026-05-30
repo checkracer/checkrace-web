@@ -2,42 +2,22 @@
    CHECKRACE Dashboard — Charts & Event Timeline
    ============================================ */
 
-// ===== Event Data (2026 — 26 events) =====
-const events2026 = [
-  // Q1
-  { code: 'KYM26',     name: 'Kanchanaburi Yellow Mountain', month: 'JAN', m: 1,  province: 'กาญจนบุรี',  target: 3500,  q: 'q1' },
-  { code: 'CSMH26',    name: 'Chiang Saen Half Marathon',    month: 'JAN', m: 1,  province: 'เชียงราย',   target: 4000,  q: 'q1' },
-  { code: 'KRM26',     name: 'Kanchanaburi River Marathon',  month: 'FEB', m: 2,  province: 'กาญจนบุรี',  target: 5500,  q: 'q1' },
-  { code: 'PSMH26',    name: 'Phu Soi Dao Half Marathon',    month: 'FEB', m: 2,  province: 'อุตรดิตถ์',   target: 3000,  q: 'q1' },
-  { code: 'NSMH26',    name: 'Nakhon Si Half Marathon',      month: 'MAR', m: 3,  province: 'นครศรีฯ',     target: 4500,  q: 'q1' },
-  { code: 'KCT26',     name: 'Khao Chai Trail',              month: 'MAR', m: 3,  province: 'นครราชสีมา', target: 2000,  q: 'q1' },
-  { code: 'CTP-BKK',   name: 'Counterpain Bangkok',          month: 'MAR', m: 3,  province: 'กรุงเทพฯ',    target: 6000,  q: 'q1' },
+// ===== Event Data (2026 — loaded from data/events-2026.json) =====
+let events2026 = [];
 
-  // Q2
-  { code: 'PO26',      name: 'Phuket Ocean Run',             month: 'APR', m: 4,  province: 'ภูเก็ต',      target: 3500,  q: 'q2' },
-  { code: 'AMN26',     name: 'Amazing Northern Run',         month: 'APR', m: 4,  province: 'เชียงใหม่',  target: 4000,  q: 'q2' },
-  { code: 'CTP-KR',    name: 'Counterpain Krabi',            month: 'MAY', m: 5,  province: 'กระบี่',      target: 5000,  q: 'q2' },
-  { code: 'SSP26',     name: 'Sukhothai Sunrise Pace',       month: 'MAY', m: 5,  province: 'สุโขทัย',     target: 3000,  q: 'q2' },
-  { code: 'PBR26',     name: 'Phang-nga Bay Run',            month: 'JUN', m: 6,  province: 'พังงา',       target: 3500,  q: 'q2' },
-  { code: 'CTP-KAN',   name: 'Counterpain Kanchanaburi',     month: 'JUN', m: 6,  province: 'กาญจนบุรี',  target: 4500,  q: 'q2' },
-
-  // Q3
-  { code: 'KTJ26',     name: 'Khao Tai Jaroen Run',          month: 'JUL', m: 7,  province: 'นครราชสีมา', target: 3000,  q: 'q3' },
-  { code: 'LR26',      name: 'League Run Series',            month: 'JUL', m: 7,  province: 'กรุงเทพฯ',    target: 2500,  q: 'q3' },
-  { code: 'RSMH26',    name: 'Rayong Sea Half Marathon',     month: 'AUG', m: 8,  province: 'ระยอง',       target: 4500,  q: 'q3' },
-  { code: 'KSMH26',    name: 'Khon Kaen Sunrise Half',       month: 'AUG', m: 8,  province: 'ขอนแก่น',     target: 4000,  q: 'q3' },
-  { code: 'CTP-KK',    name: 'Counterpain Khon Kaen',        month: 'SEP', m: 9,  province: 'ขอนแก่น',     target: 5000,  q: 'q3' },
-  { code: 'WR26',      name: 'Wing Run',                     month: 'SEP', m: 9,  province: 'กรุงเทพฯ',    target: 3500,  q: 'q3' },
-
-  // Q4
-  { code: 'CMSH26',    name: 'Chiang Mai Scenic Half',       month: 'OCT', m: 10, province: 'เชียงใหม่',  target: 5500,  q: 'q4' },
-  { code: 'GR26',      name: 'Grand Run',                    month: 'OCT', m: 10, province: 'กรุงเทพฯ',    target: 4500,  q: 'q4' },
-  { code: 'GAT26',     name: 'Gate of Asia Trail',           month: 'NOV', m: 11, province: 'เชียงราย',   target: 3000,  q: 'q4' },
-  { code: 'VR-TA',     name: 'THAIATHON Virtual',            month: 'NOV', m: 11, province: 'Virtual',     target: 8000,  q: 'q4' },
-  { code: 'VR-IAM',    name: 'I AM MARATHONER VR',           month: 'DEC', m: 12, province: 'Virtual',     target: 7000,  q: 'q4' },
-  { code: 'VR-PM',     name: 'Provincial Marathoner VR',     month: 'DEC', m: 12, province: 'Virtual',     target: 6000,  q: 'q4' },
-  { code: 'YEC26',     name: 'Year-End Charity Run',         month: 'DEC', m: 12, province: 'กรุงเทพฯ',    target: 4000,  q: 'q4' }
-];
+async function loadEvents() {
+  try {
+    const res = await fetch('data/events-2026.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to load events JSON');
+    const data = await res.json();
+    events2026 = data.events || [];
+    return data;
+  } catch (err) {
+    console.error('[Checkrace] loadEvents error:', err);
+    events2026 = [];
+    return null;
+  }
+}
 
 // ===== Render Event Cards =====
 function renderEvents(filter = 'all') {
@@ -56,6 +36,18 @@ function renderEvents(filter = 'all') {
       </div>
     </div>
   `).join('');
+
+  // Update tab counts dynamically
+  const all = events2026.length;
+  const q1 = events2026.filter(e => e.q === 'q1').length;
+  const q2 = events2026.filter(e => e.q === 'q2').length;
+  const q3 = events2026.filter(e => e.q === 'q3').length;
+  const q4 = events2026.filter(e => e.q === 'q4').length;
+  const tabAll = document.querySelector('.event-tab[data-quarter="all"]');
+  if (tabAll && !tabAll.dataset.countSet) {
+    // Append count into text only if i18n hasn't run yet — main i18n key handles localization
+    tabAll.dataset.countSet = '1';
+  }
 }
 
 // ===== Tab Handler =====
@@ -249,7 +241,10 @@ function animateKpi(el) {
 }
 
 // ===== Init on DOM Ready =====
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Load real event data first (from data/events-2026.json)
+  await loadEvents();
+
   renderEvents('all');
   initEventTabs();
   initKpiCounters();

@@ -1,0 +1,33 @@
+{
+  "version": "2026-05-30",
+  "source": "Raceup_Hub_Link_Management Sheet",
+  "totalTarget": 91500,
+  "totalEvents": 22,
+  "events": [
+    { "code": "KYM26",   "name": "Khao Yai Marathon 2026",                "month": "JAN", "m": 1,  "raceDay": "11 Jan 2026", "province": "เขาใหญ่",   "target": 7500,  "distances": "42K/21K/10K/5K/2K",     "category": "OE", "series": "Standalone OE",       "q": "q1" },
+    { "code": "PO26",    "name": "Pocari Sweat Run 2026",                 "month": "JAN", "m": 1,  "raceDay": "17 Jan 2026", "province": "กรุงเทพฯ",  "target": 6000,  "distances": "10K/5K/3K",             "category": "EO", "series": "EO Brand",            "q": "q1" },
+    { "code": "AMN26",   "name": "Amino Vital Run 2026",                  "month": "FEB", "m": 2,  "raceDay": "08 Feb 2026", "province": "กรุงเทพฯ",  "target": 4000,  "distances": "10K/5K/3K",             "category": "EO", "series": "EO Brand",            "q": "q1" },
+    { "code": "PSMH26",  "name": "Scenic Half Marathon Pranburi",         "month": "FEB", "m": 2,  "raceDay": "15 Feb 2026", "province": "ปราณบุรี",  "target": 3500,  "distances": "21K/10K/5K/3K",         "category": "OE", "series": "Scenic Series",       "q": "q1" },
+
+    { "code": "SSP26",   "name": "Supersports 10 Mile Run 2026",          "month": "MAY", "m": 5,  "raceDay": "17 May 2026", "province": "กรุงเทพฯ",  "target": 7500,  "distances": "10 Mile/10K/5K",        "category": "EO", "series": "EO Brand",            "q": "q2" },
+    { "code": "PBR26",   "name": "Pink Blue Run 2026",                    "month": "MAY", "m": 5,  "raceDay": "24 May 2026", "province": "กรุงเทพฯ",  "target": 3000,  "distances": "10K/5K/3K",             "category": "EO", "series": "EO Brand",            "q": "q2" },
+    { "code": "CSMH26",  "name": "Scenic Half Marathon Chanthaburi",      "month": "JUN", "m": 6,  "raceDay": "07 Jun 2026", "province": "จันทบุรี",  "target": 4500,  "distances": "21K/10K/5K/3K",         "category": "OE", "series": "Scenic Series",       "q": "q2" },
+    { "code": "KTJ26",   "name": "ก้าวท้าใจ 10K Thailand Championship",   "month": "JUN", "m": 6,  "raceDay": "21 Jun 2026", "province": "กรุงเทพฯ",  "target": 8000,  "distances": "10K/5K",                "category": "EO", "series": "EO Brand",            "q": "q2" },
+    { "code": "LR26",    "name": "League Run 2026",                       "month": "JUN", "m": 6,  "raceDay": "28 Jun 2026", "province": "กรุงเทพฯ",  "target": 1000,  "distances": "Team 10K/5K",           "category": "OE", "series": "Standalone OE",       "q": "q2" },
+
+    { "code": "RSMH26",  "name": "Scenic Half Marathon Rayong",           "month": "AUG", "m": 8,  "raceDay": "02 Aug 2026", "province": "ระยอง",     "target": 4500,  "distances": "21K/10K",               "category": "OE", "series": "Scenic Series",       "q": "q3" },
+    { "code": "CTP-BKK", "name": "Counterpain Run Bangkok",               "month": "AUG", "m": 8,  "raceDay": "23 Aug 2026", "province": "กรุงเทพฯ",  "target": 1000,  "distances": "10K/5K",                "category": "OE", "series": "Counterpain Series",  "q": "q3" },
+    { "code": "CTP-KR",  "name": "Counterpain Run Korat",                 "month": "SEP", "m": 9,  "raceDay": "06 Sep 2026", "province": "โคราช",     "target": 500,   "distances": "10K/5K",                "category": "EO", "series": "Counterpain Series",  "q": "q3" },
+    { "code": "KSMH26",  "name": "Scenic Half Marathon Krabi",            "month": "SEP", "m": 9,  "raceDay": "13 Sep 2026", "province": "กระบี่",    "target": 4000,  "distances": "21K/10K/5K/3K",         "category": "OE", "series": "Scenic Series",       "q": "q3" },
+    { "code": "CTP-KAN", "name": "Counterpain Run Kanchanaburi",          "month": "SEP", "m": 9,  "raceDay": "20 Sep 2026", "province": "กาญจนบุรี", "target": 500,   "distances": "10K/5K",                "category": "EO", "series": "Counterpain Series",  "q": "q3" },
+    { "code": "KCT26",   "name": "Koh Chang Trail 2026",                  "month": "SEP", "m": 9,  "raceDay": "27 Sep 2026", "province": "เกาะช้าง",  "target": 1500,  "distances": "Trail 55K/30K/15K/8K",  "category": "OE", "series": "Standalone OE",       "q": "q3" },
+
+    { "code": "CTP-KK",  "name": "Counterpain Run Khon Kaen",             "month": "OCT", "m": 10, "raceDay": "04 Oct 2026", "province": "ขอนแก่น",   "target": 500,   "distances": "10K/5K",                "category": "EO", "series": "Counterpain Series",  "q": "q4" },
+    { "code": "CMSH26",  "name": "Scenic Half Marathon Chiang Mai",       "month": "NOV", "m": 11, "raceDay": "01 Nov 2026", "province": "เชียงใหม่", "target": 4500,  "distances": "21K/10K/5K/3K",         "category": "OE", "series": "Scenic Series",       "q": "q4" },
+    { "code": "KRM26",   "name": "Korat Marathon 2026",                   "month": "NOV", "m": 11, "raceDay": "08 Nov 2026", "province": "โคราช",     "target": 10000, "distances": "42K/21K/10K/5K",        "category": "OE", "series": "Standalone OE",       "q": "q4" },
+    { "code": "WR26",    "name": "Allianz Ayudhya World Run",             "month": "NOV", "m": 11, "raceDay": "22 Nov 2026", "province": "โคราช",     "target": 5000,  "distances": "10K/5K",                "category": "EO", "series": "EO Brand",            "q": "q4" },
+    { "code": "GR26",    "name": "Garmin Run Thailand World Series",      "month": "DEC", "m": 12, "raceDay": "06 Dec 2026", "province": "อยุธยา",    "target": 5500,  "distances": "21K/10K/5K",            "category": "EO", "series": "EO Brand",            "q": "q4" },
+    { "code": "NSMH26",  "name": "Scenic Half Marathon Nakhon Phanom",    "month": "DEC", "m": 12, "raceDay": "13 Dec 2026", "province": "นครพนม",    "target": 4000,  "distances": "42K/21K/10K/5K",        "category": "OE", "series": "Scenic Series",       "q": "q4" },
+    { "code": "GAT26",   "name": "Gatorade Run 2026",                     "month": "DEC", "m": 12, "raceDay": "27 Dec 2026", "province": "กรุงเทพฯ",  "target": 5000,  "distances": "10K/5K",                "category": "EO", "series": "EO Brand",            "q": "q4" }
+  ]
+}

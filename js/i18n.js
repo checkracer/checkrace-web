@@ -11,7 +11,7 @@ const translations = {
     nav_registration: "ระบบรับสมัคร",
     nav_virtual: "Virtual Run",
     nav_timing: "ระบบจับเวลา",
-    nav_foto: "Foto",
+    nav_foto: "ภาพถ่ายนักวิ่ง",
     nav_merch: "อุปกรณ์แข่งขัน",
     nav_about: "เกี่ยวกับเรา",
     nav_portfolio: "ผลงาน",
@@ -20,11 +20,11 @@ const translations = {
     nav_dashboard: "Dashboard",
     nav_for_runner: "สำหรับนักวิ่ง",
     nav_for_organizer: "สำหรับผู้จัดงาน",
-    nav_shop: "Shop",
-    nav_stats: "Stats",
-    nav_runner_reg: "ลงทะเบียนสมัครงานวิ่ง",
+    nav_shop: "ร้านค้า",
+    nav_stats: "สถิติ",
+    nav_runner_reg: "สมัครวิ่ง",
     nav_runner_vr: "Virtual Run",
-    nav_runner_foto: "Foto",
+    nav_runner_foto: "ภาพถ่ายนักวิ่ง",
     nav_org_reg: "ระบบรับสมัคร",
     nav_org_timing: "ระบบจับเวลา",
     nav_org_vr: "Virtual Run Platform",
@@ -57,9 +57,9 @@ const translations = {
     bd_foto: "Checkrace Foto",
     bd_virtual: "Virtual Run Platform",
     events_label: "2026 EVENT SCHEDULE",
-    events_title: "งานวิ่ง 26 สนาม ปี 2026",
+    events_title: "งานวิ่ง 22 สนาม ปี 2026",
     events_desc: "งานวิ่งคุณภาพที่ Checkrace ดูแลตลอดทั้งปี",
-    evt_tab_all: "ทั้งหมด (26)",
+    evt_tab_all: "ทั้งหมด (22)",
     evt_tab_q1: "Q1 (ม.ค.–มี.ค.)",
     evt_tab_q2: "Q2 (เม.ย.–มิ.ย.)",
     evt_tab_q3: "Q3 (ก.ค.–ก.ย.)",
@@ -172,7 +172,7 @@ const translations = {
     footer_company: "บริษัท",
     footer_support: "ช่วยเหลือ",
     footer_rights: "© 2026 Checkrace. สงวนลิขสิทธิ์.",
-    footer_by: "โดย Race Up Work Co., Ltd."
+    footer_by: "โดย Checkrace Co., Ltd."
   },
 
   en: {
@@ -227,9 +227,9 @@ const translations = {
     bd_foto: "Checkrace Foto",
     bd_virtual: "Virtual Run Platform",
     events_label: "2026 EVENT SCHEDULE",
-    events_title: "26 Events in 2026",
+    events_title: "22 Events in 2026",
     events_desc: "Quality running events Checkrace manages throughout the year.",
-    evt_tab_all: "All (26)",
+    evt_tab_all: "All (22)",
     evt_tab_q1: "Q1 (Jan–Mar)",
     evt_tab_q2: "Q2 (Apr–Jun)",
     evt_tab_q3: "Q3 (Jul–Sep)",
@@ -333,7 +333,7 @@ const translations = {
     footer_company: "Company",
     footer_support: "Support",
     footer_rights: "© 2026 Checkrace. All rights reserved.",
-    footer_by: "by Race Up Work Co., Ltd."
+    footer_by: "by Checkrace Co., Ltd."
   },
 
   jp: {
@@ -388,9 +388,9 @@ const translations = {
     bd_foto: "Checkrace フォト",
     bd_virtual: "バーチャルラン",
     events_label: "2026年イベントスケジュール",
-    events_title: "2026年26イベント",
+    events_title: "2026年22イベント",
     events_desc: "Checkraceが一年を通じて運営する質の高いランニングイベント。",
-    evt_tab_all: "すべて (26)",
+    evt_tab_all: "すべて (22)",
     evt_tab_q1: "Q1 (1-3月)",
     evt_tab_q2: "Q2 (4-6月)",
     evt_tab_q3: "Q3 (7-9月)",
@@ -494,7 +494,7 @@ const translations = {
     footer_company: "会社情報",
     footer_support: "サポート",
     footer_rights: "© 2026 Checkrace. 全著作権所有。",
-    footer_by: "Race Up Work Co., Ltd."
+    footer_by: "Checkrace Co., Ltd."
   },
 
   cn: {
@@ -549,9 +549,9 @@ const translations = {
     bd_foto: "Checkrace 摄影",
     bd_virtual: "虚拟跑平台",
     events_label: "2026赛事日程",
-    events_title: "2026年26场赛事",
+    events_title: "2026年22场赛事",
     events_desc: "Checkrace全年运营的优质跑步赛事。",
-    evt_tab_all: "全部 (26)",
+    evt_tab_all: "全部 (22)",
     evt_tab_q1: "Q1 (1-3月)",
     evt_tab_q2: "Q2 (4-6月)",
     evt_tab_q3: "Q3 (7-9月)",
@@ -655,7 +655,7 @@ const translations = {
     footer_company: "公司",
     footer_support: "支持",
     footer_rights: "© 2026 Checkrace. 版权所有。",
-    footer_by: "Race Up Work Co., Ltd."
+    footer_by: "Checkrace Co., Ltd."
   }
 };
 
