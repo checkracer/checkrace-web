@@ -16,15 +16,44 @@
       <a href="index.html" class="navbar-logo"><img src="assets/logo.svg" alt="Checkrace" class="brand-mark"></a>
       <div class="nav-links">
         <a href="index.html" data-i18n="nav_home">หน้าแรก</a>
-        <a href="registration.html" class="active" data-i18n="nav_registration">ระบบรับสมัคร</a>
-        <a href="virtual-run.html" data-i18n="nav_virtual">Virtual Run</a>
-        <a href="timing.html" data-i18n="nav_timing">ระบบจับเวลา</a>
-        <a href="foto.html" data-i18n="nav_foto">Foto</a>
-        <a href="merchandise.html" data-i18n="nav_merch">อุปกรณ์แข่งขัน</a>
-        <a href="dashboard.html" data-i18n="nav_dashboard">Dashboard</a>
-        <a href="about.html" data-i18n="nav_about">เกี่ยวกับเรา</a>
-        <a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a>
-        <div class="lang-switcher"><button data-lang="th" class="active">TH</button><button data-lang="en">EN</button><button data-lang="jp">JP</button><button data-lang="cn">CN</button></div>
+
+        <div class="nav-dropdown" data-page="runner">
+          <button class="nav-dropdown-toggle" data-i18n="nav_for_runner">สำหรับนักวิ่ง</button>
+          <div class="nav-dropdown-menu">
+            <a href="https://run.checkrace.com" target="_blank" rel="noopener" class="external" data-i18n="nav_runner_reg">ลงทะเบียนสมัครงานวิ่ง</a>
+            <a href="https://vr.checkrace.com" target="_blank" rel="noopener" class="external" data-i18n="nav_runner_vr">Virtual Run</a>
+            <a href="foto.html" data-i18n="nav_runner_foto">Foto</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown" data-page="organizer">
+          <button class="nav-dropdown-toggle" data-i18n="nav_for_organizer">สำหรับผู้จัดงาน</button>
+          <div class="nav-dropdown-menu">
+            <a href="registration.html" data-i18n="nav_org_reg">ระบบรับสมัคร</a>
+            <a href="timing.html" data-i18n="nav_org_timing">ระบบจับเวลา</a>
+            <a href="virtual-run.html" data-i18n="nav_org_vr">Virtual Run Platform</a>
+          </div>
+        </div>
+
+        <a href="https://shop.checkrace.com" target="_blank" rel="noopener" data-i18n="nav_shop">Shop</a>
+
+        <div class="nav-dropdown" data-page="about">
+          <button class="nav-dropdown-toggle" data-i18n="nav_about">เกี่ยวกับเรา</button>
+          <div class="nav-dropdown-menu">
+            <a href="about.html" data-i18n="nav_about_us">เกี่ยวกับเรา</a>
+            <a href="dashboard.html" data-i18n="nav_stats">Stats</a>
+            <a href="portfolio.html" data-i18n="nav_portfolio">ผลงาน</a>
+            <a href="faq.html" data-i18n="nav_faq">คำถามที่พบบ่อย</a>
+            <a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a>
+          </div>
+        </div>
+
+        <div class="lang-switcher">
+          <button data-lang="th" class="active">TH</button>
+          <button data-lang="en">EN</button>
+          <button data-lang="jp">JP</button>
+          <button data-lang="cn">CN</button>
+        </div>
       </div>
       <button class="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>

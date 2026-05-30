@@ -5,11 +5,55 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
+  initDropdowns();
   initScrollAnimations();
   initCounters();
   initFAQ();
   initI18n();
 });
+
+/* --- Dropdown menus (desktop hover + mobile click) --- */
+function initDropdowns() {
+  const dropdowns = document.querySelectorAll('.nav-dropdown');
+  const mq = window.matchMedia('(max-width: 768px)');
+
+  dropdowns.forEach(dd => {
+    const toggle = dd.querySelector('.nav-dropdown-toggle');
+    if (!toggle) return;
+
+    toggle.addEventListener('click', (e) => {
+      // On mobile (or any click) toggle .open
+      e.preventDefault();
+      e.stopPropagation();
+      const wasOpen = dd.classList.contains('open');
+      // Close other dropdowns
+      dropdowns.forEach(d => d.classList.remove('open'));
+      if (!wasOpen) dd.classList.add('open');
+    });
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nav-dropdown')) {
+      dropdowns.forEach(d => d.classList.remove('open'));
+    }
+  });
+
+  // Mark active dropdown based on current page
+  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+  dropdowns.forEach(dd => {
+    const hasActive = Array.from(dd.querySelectorAll('a')).some(a => {
+      const href = a.getAttribute('href');
+      return href === currentPage;
+    });
+    if (hasActive) {
+      dd.classList.add('has-active');
+      dd.querySelectorAll('a').forEach(a => {
+        if (a.getAttribute('href') === currentPage) a.classList.add('active');
+      });
+    }
+  });
+}
 
 /* --- Navbar --- */
 function initNavbar() {
