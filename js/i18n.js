@@ -28,6 +28,7 @@ const translations = {
     nav_org_reg: "ระบบรับสมัคร",
     nav_org_timing: "ระบบจับเวลา",
     nav_org_vr: "Virtual Run Platform",
+    nav_org_sponsors: "สปอนเซอร์",
     nav_about_us: "เกี่ยวกับเรา",
 
     // Dashboard
@@ -198,6 +199,7 @@ const translations = {
     nav_org_reg: "Registration System",
     nav_org_timing: "Timing System",
     nav_org_vr: "Virtual Run Platform",
+    nav_org_sponsors: "Sponsors Expert",
     nav_about_us: "About Us",
 
     // Dashboard
@@ -359,6 +361,7 @@ const translations = {
     nav_org_reg: "エントリーシステム",
     nav_org_timing: "計時システム",
     nav_org_vr: "バーチャルランプラットフォーム",
+    nav_org_sponsors: "スポンサーシップ",
     nav_about_us: "会社概要",
 
     // Dashboard
@@ -520,6 +523,7 @@ const translations = {
     nav_org_reg: "报名系统",
     nav_org_timing: "计时系统",
     nav_org_vr: "虚拟跑平台",
+    nav_org_sponsors: "赞助商专家",
     nav_about_us: "关于我们",
 
     // Dashboard
