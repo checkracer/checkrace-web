@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard ผลงาน — Checkrace</title>
+  <meta name="description" content="Dashboard แสดงผลงานของ Checkrace — 26 งานวิ่งปี 2026, นักวิ่งกว่า 100,000 คน, สถิติย้อนหลัง">
+  <link rel="icon" type="image/png" href="https://checkrace.com/checkrace_LOGO2.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo">
+        <img src="https://checkrace.com/checkrace_LOGO2.png" alt="Checkrace Logo">
+        <span>Checkrace</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav_home">หน้าแรก</a>
+        <a href="registration.html" data-i18n="nav_registration">ระบบรับสมัคร</a>
+        <a href="virtual-run.html" data-i18n="nav_virtual">Virtual Run</a>
+        <a href="timing.html" data-i18n="nav_timing">ระบบจับเวลา</a>
+        <a href="merchandise.html" data-i18n="nav_merch">อุปกรณ์แข่งขัน</a>
+        <a href="dashboard.html" class="active" data-i18n="nav_dashboard">Dashboard</a>
+        <a href="about.html" data-i18n="nav_about">เกี่ยวกับเรา</a>
+        <a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a>
+        <div class="lang-switcher">
+          <button data-lang="th" class="active">TH</button>
+          <button data-lang="en">EN</button>
+          <button data-lang="jp">JP</button>
+          <button data-lang="cn">CN</button>
+        </div>
+      </div>
+
+      <button class="menu-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== PAGE HEADER ========== -->
+  <section class="page-header">
+    <div class="container">
+      <span class="section-label" style="color: var(--cr-red-light);" data-i18n="dash_label">PERFORMANCE DASHBOARD</span>
+      <h1 data-i18n="dash_title">ผลงานของเรา</h1>
+      <p data-i18n="dash_desc">ตัวเลขจริงที่สะท้อนความไว้วางใจจากผู้จัดงานวิ่งและนักวิ่งทั่วประเทศ</p>
+    </div>
+  </section>
+
+  <!-- ========== KPI HERO ========== -->
+  <section class="dash-section">
+    <div class="container">
+      <div class="kpi-grid">
+        <div class="kpi-card fade-in">
+          <div class="kpi-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div class="kpi-number" data-target="26" data-suffix="">0</div>
+          <div class="kpi-label" data-i18n="kpi_events_2026">งานวิ่งปี 2026</div>
+          <div class="kpi-trend up">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            <span data-i18n="kpi_events_trend">+30% จากปี 2025</span>
+          </div>
+        </div>
+
+        <div class="kpi-card kpi-highlight fade-in">
+          <div class="kpi-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="kpi-number" data-target="100000" data-suffix="+">0</div>
+          <div class="kpi-label" data-i18n="kpi_runners_2026">นักวิ่งเป้าหมายปี 2026</div>
+          <div class="kpi-trend up">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            <span data-i18n="kpi_runners_trend">+25% จากปีที่แล้ว</span>
+          </div>
+        </div>
+
+        <div class="kpi-card fade-in">
+          <div class="kpi-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/>
+            </svg>
+          </div>
+          <div class="kpi-number" data-target="200" data-suffix="+">0</div>
+          <div class="kpi-label" data-i18n="kpi_total_events">งานที่จัดแล้วทั้งหมด</div>
+          <div class="kpi-trend neutral">
+            <span data-i18n="kpi_total_events_sub">ตั้งแต่ปี 2016</span>
+          </div>
+        </div>
+
+        <div class="kpi-card fade-in">
+          <div class="kpi-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <div class="kpi-number" data-target="500000" data-suffix="+">0</div>
+          <div class="kpi-label" data-i18n="kpi_medals">เหรียญ/เสื้อที่ผลิต</div>
+          <div class="kpi-trend neutral">
+            <span data-i18n="kpi_medals_sub">รวมทุกงาน</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== GROWTH CHART ========== -->
+  <section class="dash-section dash-section-alt">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-label" data-i18n="chart_label">GROWTH TIMELINE</span>
+        <h2 data-i18n="chart_title">การเติบโตของจำนวนนักวิ่ง</h2>
+        <p data-i18n="chart_desc">เปรียบเทียบจำนวนนักวิ่งและงานที่จัดในแต่ละปี</p>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card fade-in">
+          <div class="chart-card-header">
+            <h3 data-i18n="chart_runners_title">จำนวนนักวิ่งสะสม</h3>
+            <span class="chart-card-badge" data-i18n="chart_yoy">YoY</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="runnersChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card fade-in">
+          <div class="chart-card-header">
+            <h3 data-i18n="chart_events_title">จำนวนงานต่อปี</h3>
+            <span class="chart-card-badge" data-i18n="chart_yoy">YoY</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="eventsChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SERVICE BREAKDOWN ========== -->
+  <section class="dash-section">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-label" data-i18n="svc_break_label">SERVICE BREAKDOWN</span>
+        <h2 data-i18n="svc_break_title">สัดส่วนบริการที่ลูกค้าเลือก</h2>
+        <p data-i18n="svc_break_desc">บริการของ Checkrace ที่ผู้จัดงานเลือกใช้มากที่สุด</p>
+      </div>
+
+      <div class="breakdown-grid">
+        <div class="breakdown-chart fade-in">
+          <div class="chart-wrapper" style="max-width: 380px; margin: 0 auto;">
+            <canvas id="serviceChart"></canvas>
+          </div>
+        </div>
+
+        <div class="breakdown-list fade-in">
+          <div class="breakdown-item">
+            <div class="breakdown-bar" style="--pct: 95%; --color: var(--cr-red);"></div>
+            <div class="breakdown-info">
+              <span class="breakdown-name" data-i18n="bd_registration">ระบบรับสมัคร</span>
+              <span class="breakdown-value">95%</span>
+            </div>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-bar" style="--pct: 88%; --color: #E53935;"></div>
+            <div class="breakdown-info">
+              <span class="breakdown-name" data-i18n="bd_timing">ระบบจับเวลา RFID</span>
+              <span class="breakdown-value">88%</span>
+            </div>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-bar" style="--pct: 72%; --color: #FF5252;"></div>
+            <div class="breakdown-info">
+              <span class="breakdown-name" data-i18n="bd_merch">ผลิตเหรียญ/เสื้อ/บิบ</span>
+              <span class="breakdown-value">72%</span>
+            </div>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-bar" style="--pct: 45%; --color: #FF8A80;"></div>
+            <div class="breakdown-info">
+              <span class="breakdown-name" data-i18n="bd_foto">Checkrace Foto</span>
+              <span class="breakdown-value">45%</span>
+            </div>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-bar" style="--pct: 38%; --color: #FFAB91;"></div>
+            <div class="breakdown-info">
+              <span class="breakdown-name" data-i18n="bd_virtual">Virtual Run Platform</span>
+              <span class="breakdown-value">38%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 2026 EVENTS TIMELINE ========== -->
+  <section class="dash-section dash-section-alt">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-label" data-i18n="events_label">2026 EVENT SCHEDULE</span>
+        <h2 data-i18n="events_title">งานวิ่ง 26 สนาม ปี 2026</h2>
+        <p data-i18n="events_desc">งานวิ่งคุณภาพที่ Checkrace ดูแลตลอดทั้งปี</p>
+      </div>
+
+      <div class="events-tabs">
+        <button class="event-tab active" data-quarter="all" data-i18n="evt_tab_all">ทั้งหมด (26)</button>
+        <button class="event-tab" data-quarter="q1" data-i18n="evt_tab_q1">Q1 (ม.ค.–มี.ค.)</button>
+        <button class="event-tab" data-quarter="q2" data-i18n="evt_tab_q2">Q2 (เม.ย.–มิ.ย.)</button>
+        <button class="event-tab" data-quarter="q3" data-i18n="evt_tab_q3">Q3 (ก.ค.–ก.ย.)</button>
+        <button class="event-tab" data-quarter="q4" data-i18n="evt_tab_q4">Q4 (ต.ค.–ธ.ค.)</button>
+      </div>
+
+      <div class="events-grid fade-in" id="eventsGrid">
+        <!-- Generated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ACHIEVEMENT HIGHLIGHTS ========== -->
+  <section class="dash-section">
+    <div class="container">
+      <div class="section-header fade-in">
+        <span class="section-label" data-i18n="achievement_label">ACHIEVEMENTS</span>
+        <h2 data-i18n="achievement_title">ความสำเร็จที่ผ่านมา</h2>
+      </div>
+
+      <div class="achievements-grid">
+        <div class="achievement-card fade-in">
+          <div class="achievement-icon">🏆</div>
+          <h4 data-i18n="ach_1_title">งานวิ่งระดับ Scenic Marathon</h4>
+          <p data-i18n="ach_1_desc">ดูแลซีรีย์ Scenic Half Marathon 5–6 สนามต่อปี ครอบคลุมจังหวัดที่สวยที่สุดของไทย</p>
+        </div>
+        <div class="achievement-card fade-in">
+          <div class="achievement-icon">⏱️</div>
+          <h4 data-i18n="ach_2_title">ระบบจับเวลา RACE RESULT</h4>
+          <p data-i18n="ach_2_desc">ระบบจับเวลามาตรฐานสากล แม่นยำระดับมิลลิวินาที รองรับ 30,000+ คนต่องาน</p>
+        </div>
+        <div class="achievement-card fade-in">
+          <div class="achievement-icon">🥇</div>
+          <h4 data-i18n="ach_3_title">ผลิตเหรียญทั่วประเทศ</h4>
+          <p data-i18n="ach_3_desc">ผลิตเหรียญรางวัลคุณภาพสูงกว่า 500,000 ชิ้น ส่งมอบครบทุกงาน</p>
+        </div>
+        <div class="achievement-card fade-in">
+          <div class="achievement-icon">🌏</div>
+          <h4 data-i18n="ach_4_title">Virtual Run ระดับนานาชาติ</h4>
+          <p data-i18n="ach_4_desc">โปรเจค THAIATHON, Provincial Marathoner, I AM MARATHONER มีนักวิ่งสะสมระยะหลายแสนกิโลเมตร</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CTA ========== -->
+  <section class="cta-section">
+    <div class="container fade-in">
+      <h2 data-i18n="cta_dash_title">พร้อมเข้าร่วมเป็นส่วนหนึ่งของตัวเลขเหล่านี้?</h2>
+      <p data-i18n="cta_dash_desc">ไม่ว่าจะเป็นผู้จัดงานหรือนักวิ่ง Checkrace พร้อมให้บริการคุณ</p>
+      <a href="contact.html" class="btn btn-white btn-lg" data-i18n="cta_btn">ติดต่อเราวันนี้</a>
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="navbar-logo">
+            <img src="https://checkrace.com/checkrace_LOGO2.png" alt="Checkrace">
+            <span style="color: var(--cr-red);">Checkrace</span>
+          </a>
+          <p data-i18n="footer_desc">Running Solution Platform ครบวงจร สำหรับผู้จัดงานวิ่งทั่วประเทศ</p>
+        </div>
+        <div>
+          <h4 data-i18n="footer_services">บริการ</h4>
+          <ul>
+            <li><a href="registration.html" data-i18n="nav_registration">ระบบรับสมัคร</a></li>
+            <li><a href="virtual-run.html" data-i18n="nav_virtual">Virtual Run</a></li>
+            <li><a href="timing.html" data-i18n="nav_timing">ระบบจับเวลา</a></li>
+            <li><a href="foto.html" data-i18n="nav_foto">Foto</a></li>
+            <li><a href="merchandise.html" data-i18n="nav_merch">อุปกรณ์แข่งขัน</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footer_company">บริษัท</h4>
+          <ul>
+            <li><a href="about.html" data-i18n="nav_about">เกี่ยวกับเรา</a></li>
+            <li><a href="portfolio.html" data-i18n="nav_portfolio">ผลงาน</a></li>
+            <li><a href="dashboard.html" data-i18n="nav_dashboard">Dashboard</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footer_support">ช่วยเหลือ</h4>
+          <ul>
+            <li><a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a></li>
+            <li><a href="faq.html" data-i18n="nav_faq">คำถามที่พบบ่อย</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span><span data-i18n="footer_rights">© 2026 Checkrace. สงวนลิขสิทธิ์.</span> <span data-i18n="footer_by">โดย Race Up Work Co., Ltd.</span></span>
+        <div class="social-links">
+          <a href="https://facebook.com/checkrace" target="_blank" aria-label="Facebook">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="https://line.me" target="_blank" aria-label="LINE">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.82 2 10.5c0 3.28 2.42 6.13 6 7.53V22l3.71-2.23c.1 0 .19.01.29.01 5.52 0 10-3.82 10-8.28C22 5.82 17.52 2 12 2z"/></svg>
+          </a>
+          <a href="https://instagram.com/checkrace" target="_blank" aria-label="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========== Chart.js + Custom Dashboard JS ========== -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,92 +1,147 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ติดต่อ — Checkrace | ขอใบเสนอราคา</title>
-<meta name="description" content="ติดต่อ Checkrace เพื่อจัดงานวิ่งของคุณ — info@checkrace.com · 061-010-4669 · LINE @checkrace">
-<link rel="icon" href="/assets/images/mark.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ติดต่อเรา — Checkrace</title>
+  <link rel="icon" type="image/png" href="https://checkrace.com/checkrace_LOGO2.png">
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-page="contact">
-<div id="cr-header"></div>
+<body>
 
-<section class="hero" style="padding:64px 0 40px">
-  <div class="container text-center">
-    <span class="eyebrow" data-th="ติดต่อเรา" data-en="Contact us">ติดต่อเรา</span>
-    <h1 data-th="มาคุยเรื่องงานวิ่ง <span>ของคุณกัน</span>" data-en="Let’s talk about <span>your race</span>" data-html>มาคุยเรื่องงานวิ่ง <span>ของคุณกัน</span></h1>
-    <p class="lead" data-th="กรอกรายละเอียดงาน แล้วทีมงานจะติดต่อกลับพร้อมใบเสนอราคา" data-en="Tell us about your event and our team will reply with a quote.">กรอกรายละเอียดงาน แล้วทีมงานจะติดต่อกลับพร้อมใบเสนอราคา</p>
-  </div>
-</section>
-
-<section style="padding-top:30px">
-  <div class="container">
-    <div class="grid grid-2" style="align-items:start">
-      <!-- contact channels -->
-      <div class="fade-up">
-        <h2 data-th="ช่องทางติดต่อ" data-en="Reach us">ช่องทางติดต่อ</h2>
-        <div class="grid" style="gap:16px;margin-top:22px">
-          <a class="card" href="mailto:info@checkrace.com" style="display:flex;gap:16px;align-items:center">
-            <span class="card-icon" style="margin:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
-            <span><strong>Email</strong><br><span class="text-muted">info@checkrace.com</span></span>
-          </a>
-          <a class="card" href="tel:0610104669" style="display:flex;gap:16px;align-items:center">
-            <span class="card-icon" style="margin:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L8.1 9.5a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.7 2z"/></svg></span>
-            <span><strong data-th="โทรศัพท์" data-en="Phone">โทรศัพท์</strong><br><span class="text-muted">061-010-4669</span></span>
-          </a>
-          <a class="card" href="https://line.me/R/ti/p/@checkrace" style="display:flex;gap:16px;align-items:center">
-            <span class="card-icon" style="margin:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.4 9 9 0 0 1-2.6-.4L4 21l1.1-3.3A8.2 8.2 0 0 1 4 11.5 8.4 8.4 0 0 1 12.5 3 8.4 8.4 0 0 1 21 11.5z"/></svg></span>
-            <span><strong>LINE OA</strong><br><span class="text-muted">@checkrace</span></span>
-          </a>
-          <a class="card" href="https://checkrace.com" style="display:flex;gap:16px;align-items:center">
-            <span class="card-icon" style="margin:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg></span>
-            <span><strong>Website</strong><br><span class="text-muted">checkrace.com</span></span>
-          </a>
-        </div>
-        <p class="text-muted" style="margin-top:22px;font-size:.9rem" data-th="ดำเนินการโดย Race Up Work Co., Ltd." data-en="Operated by Race Up Work Co., Ltd.">ดำเนินการโดย Race Up Work Co., Ltd.</p>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo"><img src="https://checkrace.com/checkrace_LOGO2.png" alt="Checkrace Logo"><span>Checkrace</span></a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav_home">หน้าแรก</a>
+        <a href="registration.html" data-i18n="nav_registration">ระบบรับสมัคร</a>
+        <a href="virtual-run.html" data-i18n="nav_virtual">Virtual Run</a>
+        <a href="timing.html" data-i18n="nav_timing">ระบบจับเวลา</a>
+        <a href="foto.html" data-i18n="nav_foto">Foto</a>
+        <a href="merchandise.html" data-i18n="nav_merch">อุปกรณ์แข่งขัน</a>
+        <a href="dashboard.html" data-i18n="nav_dashboard">Dashboard</a>
+        <a href="about.html" data-i18n="nav_about">เกี่ยวกับเรา</a>
+        <a href="contact.html" class="active" data-i18n="nav_contact">ติดต่อเรา</a>
+        <div class="lang-switcher"><button data-lang="th" class="active">TH</button><button data-lang="en">EN</button><button data-lang="jp">JP</button><button data-lang="cn">CN</button></div>
       </div>
+      <button class="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
 
-      <!-- inquiry form -->
-      <div class="card fade-up">
-        <h2 data-th="ส่งรายละเอียดงาน" data-en="Tell us about your event">ส่งรายละเอียดงาน</h2>
-        <form id="quoteForm" style="display:flex;flex-direction:column;gap:14px;margin-top:18px">
-          <input class="toolbar-input" id="qName" required style="font-family:var(--font);padding:12px 14px;border:1px solid var(--line);border-radius:10px" data-th-ph="ชื่อ-นามสกุล / องค์กร" data-en-ph="Name / organization" placeholder="ชื่อ-นามสกุล / องค์กร">
-          <input id="qContact" required style="font-family:var(--font);padding:12px 14px;border:1px solid var(--line);border-radius:10px" data-th-ph="อีเมล หรือ เบอร์โทร" data-en-ph="Email or phone" placeholder="อีเมล หรือ เบอร์โทร">
-          <input id="qEvent" style="font-family:var(--font);padding:12px 14px;border:1px solid var(--line);border-radius:10px" data-th-ph="ชื่องาน / จังหวัด" data-en-ph="Event name / province" placeholder="ชื่องาน / จังหวัด">
-          <select id="qSize" style="font-family:var(--font);padding:12px 14px;border:1px solid var(--line);border-radius:10px">
-            <option value="" data-th="ขนาดงาน (ประมาณ)" data-en="Event size (approx.)">ขนาดงาน (ประมาณ)</option>
-            <option value="Small">Small (&lt;1,000)</option>
-            <option value="Medium">Medium (1,000–2,000)</option>
-            <option value="Large">Large (2,000–4,000)</option>
-            <option value="XL">XL (&gt;4,000)</option>
-          </select>
-          <textarea id="qMsg" rows="4" style="font-family:var(--font);padding:12px 14px;border:1px solid var(--line);border-radius:10px" data-th-ph="บริการที่สนใจ / รายละเอียดเพิ่มเติม" data-en-ph="Services of interest / details" placeholder="บริการที่สนใจ / รายละเอียดเพิ่มเติม"></textarea>
-          <button type="submit" class="btn btn-primary" style="justify-content:center" data-th="ส่งคำขอใบเสนอราคา" data-en="Send request">ส่งคำขอใบเสนอราคา</button>
-          <p class="text-muted" style="font-size:.82rem" data-th="* การกดส่งจะเปิดอีเมลของคุณพร้อมข้อมูลที่กรอกไว้ ส่งถึง info@checkrace.com" data-en="* Submitting opens your email app with the details prefilled, addressed to info@checkrace.com.">* การกดส่งจะเปิดอีเมลของคุณพร้อมข้อมูลที่กรอกไว้ ส่งถึง info@checkrace.com</p>
-        </form>
+  <!-- PAGE HEADER -->
+  <section class="page-header">
+    <div class="container">
+      <span class="section-label" style="color: var(--cr-red-light);" data-i18n="contact_label">ติดต่อเรา</span>
+      <h1 data-i18n="contact_title">พูดคุยกับทีมงาน</h1>
+      <p data-i18n="contact_desc">ส่งข้อความถึงเรา แล้วทีมงานจะติดต่อกลับภายใน 24 ชั่วโมง</p>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section contact-section">
+    <div class="container">
+      <div class="contact-grid fade-in">
+        <!-- Form -->
+        <div>
+          <form onsubmit="handleContactSubmit(event)">
+            <div class="form-group">
+              <label data-i18n="contact_name">ชื่อ-สกุล</label>
+              <input type="text" required data-i18n-placeholder="contact_name" placeholder="ชื่อ-สกุล">
+            </div>
+            <div class="form-group">
+              <label data-i18n="contact_email">อีเมล</label>
+              <input type="email" required placeholder="email@example.com">
+            </div>
+            <div class="form-group">
+              <label data-i18n="contact_phone">เบอร์โทรศัพท์</label>
+              <input type="tel" placeholder="0XX-XXX-XXXX">
+            </div>
+            <div class="form-group">
+              <label data-i18n="contact_event">ประเภทงาน</label>
+              <select required>
+                <option value="" disabled selected>-- เลือกประเภทงาน --</option>
+                <option value="marathon" data-i18n="contact_event_marathon">Marathon / Half Marathon</option>
+                <option value="virtual" data-i18n="contact_event_virtual">Virtual Run</option>
+                <option value="fun" data-i18n="contact_event_fun">Fun Run</option>
+                <option value="trail" data-i18n="contact_event_trail">Trail Run</option>
+                <option value="other" data-i18n="contact_event_other">อื่นๆ</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label data-i18n="contact_message">รายละเอียดเพิ่มเติม</label>
+              <textarea data-i18n-placeholder="contact_message" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;" data-i18n="contact_submit">ส่งข้อความ</button>
+          </form>
+        </div>
+
+        <!-- Contact Info -->
+        <div>
+          <div class="contact-info-card">
+            <div class="contact-info-item">
+              <div class="icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div>
+                <h4 data-i18n="contact_address_title">ที่อยู่สำนักงาน</h4>
+                <p data-i18n="contact_address">กรุงเทพมหานคร, ประเทศไทย</p>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <div class="icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <h4 data-i18n="contact_email_title">อีเมล</h4>
+                <p><a href="mailto:info@checkrace.com" style="color: var(--cr-red);">info@checkrace.com</a></p>
+              </div>
+            </div>
+            <div class="contact-info-item">
+              <div class="icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <div>
+                <h4 data-i18n="contact_phone_title">โทรศัพท์</h4>
+                <p><a href="tel:+6620001234" style="color: var(--cr-red);">02-000-1234</a></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Map placeholder -->
+          <div style="border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 16/10; background: var(--cr-gray-100); display: flex; align-items: center; justify-content: center; border: 1px solid var(--cr-gray-100);">
+            <div style="text-align:center; color: var(--cr-gray-500);">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 8px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <p style="font-size: 0.85rem;">Google Maps</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<div id="cr-footer"></div>
-<script src="/assets/js/site.js"></script>
-<script>
-document.getElementById('quoteForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  var g=function(id){return (document.getElementById(id).value||'').trim();};
-  var en=(window.CR&&CR.lang==='en');
-  var subject=(en?'Checkrace quote request — ':'ขอใบเสนอราคา Checkrace — ')+(g('qEvent')||g('qName'));
-  var body=
-    (en?'Name/Org: ':'ชื่อ/องค์กร: ')+g('qName')+'\n'+
-    (en?'Contact: ':'ติดต่อ: ')+g('qContact')+'\n'+
-    (en?'Event: ':'งาน: ')+g('qEvent')+'\n'+
-    (en?'Size: ':'ขนาดงาน: ')+g('qSize')+'\n\n'+
-    (en?'Details:\n':'รายละเอียด:\n')+g('qMsg');
-  window.location.href='mailto:info@checkrace.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-});
-</script>
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand"><a href="index.html" class="navbar-logo"><img src="https://checkrace.com/checkrace_LOGO2.png" alt="Checkrace"><span style="color:var(--cr-red);">Checkrace</span></a><p data-i18n="footer_desc">Running Solution Platform ครบวงจร สำหรับผู้จัดงานวิ่งทั่วประเทศ</p></div>
+        <div><h4 data-i18n="footer_services">บริการ</h4><ul><li><a href="registration.html" data-i18n="nav_registration">ระบบรับสมัคร</a></li><li><a href="virtual-run.html" data-i18n="nav_virtual">Virtual Run</a></li><li><a href="timing.html" data-i18n="nav_timing">ระบบจับเวลา</a></li><li><a href="foto.html" data-i18n="nav_foto">Foto</a></li><li><a href="merchandise.html" data-i18n="nav_merch">อุปกรณ์แข่งขัน</a></li></ul></div>
+        <div><h4 data-i18n="footer_company">บริษัท</h4><ul><li><a href="about.html" data-i18n="nav_about">เกี่ยวกับเรา</a></li><li><a href="portfolio.html" data-i18n="nav_portfolio">ผลงาน</a></li>
+            <li><a href="dashboard.html" data-i18n="nav_dashboard">Dashboard</a></li></ul></div>
+        <div><h4 data-i18n="footer_support">ช่วยเหลือ</h4><ul><li><a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a></li><li><a href="faq.html" data-i18n="nav_faq">คำถามที่พบบ่อย</a></li></ul></div>
+      </div>
+      <div class="footer-bottom">
+        <span><span data-i18n="footer_rights">© 2026 Checkrace. สงวนลิขสิทธิ์.</span> <span data-i18n="footer_by">โดย Race Up Work Co., Ltd.</span></span>
+        <div class="social-links">
+          <a href="https://facebook.com/checkrace" target="_blank" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+          <a href="https://line.me" target="_blank" aria-label="LINE"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 5.82 2 10.5c0 3.28 2.42 6.13 6 7.53V22l3.71-2.23c.1 0 .19.01.29.01 5.52 0 10-3.82 10-8.28C22 5.82 17.52 2 12 2z"/></svg></a>
+          <a href="https://instagram.com/checkrace" target="_blank" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

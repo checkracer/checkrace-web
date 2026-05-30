@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ผลงาน — Checkrace</title>
+  <title>Foto — Checkrace</title>
+  <meta name="description" content="ระบบถ่ายภาพงานวิ่งอัตโนมัติ ค้นหาด้วยบิบ AI Face Recognition พร้อมดาวน์โหลดทันที">
   <link rel="icon" type="image/png" href="https://checkrace.com/checkrace_LOGO2.png">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -18,11 +19,10 @@
         <a href="registration.html" data-i18n="nav_registration">ระบบรับสมัคร</a>
         <a href="virtual-run.html" data-i18n="nav_virtual">Virtual Run</a>
         <a href="timing.html" data-i18n="nav_timing">ระบบจับเวลา</a>
-        <a href="foto.html" data-i18n="nav_foto">Foto</a>
+        <a href="foto.html" class="active" data-i18n="nav_foto">Foto</a>
         <a href="merchandise.html" data-i18n="nav_merch">อุปกรณ์แข่งขัน</a>
         <a href="dashboard.html" data-i18n="nav_dashboard">Dashboard</a>
         <a href="about.html" data-i18n="nav_about">เกี่ยวกับเรา</a>
-        <a href="portfolio.html" class="active" data-i18n="nav_portfolio">ผลงาน</a>
         <a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a>
         <div class="lang-switcher"><button data-lang="th" class="active">TH</button><button data-lang="en">EN</button><button data-lang="jp">JP</button><button data-lang="cn">CN</button></div>
       </div>
@@ -33,51 +33,70 @@
   <!-- PAGE HEADER -->
   <section class="page-header">
     <div class="container">
-      <span class="section-label" style="color: var(--cr-red-light);" data-i18n="portfolio_label">ผลงาน</span>
-      <h1 data-i18n="portfolio_title">งานที่ผ่านมาของเรา</h1>
-      <p data-i18n="portfolio_desc">ประสบการณ์จัดงานวิ่งระดับมืออาชีพกว่า 200 งาน ทั่วประเทศ</p>
+      <h1 data-i18n="svc_foto_title">Checkrace Foto</h1>
+      <p data-i18n="svc_foto_desc">ระบบถ่ายภาพงานวิ่งอัตโนมัติ ค้นหาด้วยเลขบิบหรือ AI Face Recognition ดาวน์โหลดได้ทันที</p>
+      <div class="breadcrumb">
+        <a href="index.html" data-i18n="nav_home">หน้าแรก</a><span>/</span><span data-i18n="svc_foto_title">Checkrace Foto</span>
+      </div>
     </div>
   </section>
 
-  <!-- PORTFOLIO GRID -->
+  <!-- SERVICE DETAIL -->
   <section class="section">
     <div class="container">
-      <div class="portfolio-grid">
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#E53935,#C62828);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">Khao Rang<br>Scenic Marathon</span>
-          </div>
-          <div class="portfolio-overlay"><div><h4>Khao Rang Scenic Marathon</h4><p>Phuket, Thailand</p></div></div>
+      <div class="service-detail reverse fade-in">
+        <div class="service-image">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
         </div>
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#424242,#212121);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">Koh Yao Noi<br>Scenic Marathon</span>
+        <div>
+          <span class="section-label">RACE PHOTOGRAPHY</span>
+          <h2 data-i18n="svc_foto_detail_title">ถ่ายภาพงานวิ่ง ค้นหาง่าย ดาวน์โหลดเร็ว</h2>
+          <p style="color: var(--cr-gray-500); margin: var(--space-lg) 0;" data-i18n="svc_foto_detail_desc">บริการถ่ายภาพงานวิ่งครบวงจร ตั้งแต่ทีมช่างภาพมืออาชีพ ระบบอัปโหลดอัตโนมัติ ไปจนถึง AI ค้นหาภาพ ให้นักวิ่งค้นหาและดาวน์โหลดภาพได้ภายในไม่กี่ชั่วโมงหลังจบงาน</p>
+
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="check">✓</div>
+              <div>
+                <h4>ทีมช่างภาพมืออาชีพ</h4>
+                <p>ช่างภาพสายงานวิ่งโดยเฉพาะ ครอบคลุมทุกจุดสำคัญ — Start, On Course, Finish Line, Medal, Podium</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="check">✓</div>
+              <div>
+                <h4>ค้นหาด้วยเลขบิบ</h4>
+                <p>AI อ่านเลขบิบจากภาพอัตโนมัติ นักวิ่งกรอกเลขบิบแล้วเจอภาพตัวเองทันที</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="check">✓</div>
+              <div>
+                <h4>AI Face Recognition</h4>
+                <p>ระบบจดจำใบหน้า อัปโหลดรูป Selfie แล้วค้นหาภาพตัวเองจากทุกจุดถ่าย</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="check">✓</div>
+              <div>
+                <h4>ดาวน์โหลดฟรีหรือแบบ Premium</h4>
+                <p>รูปแบบ Free Download สำหรับผู้จัดงาน หรือแบบ Premium ที่นักวิ่งซื้อภาพ HD พร้อม Watermark สวยงาม</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="check">✓</div>
+              <div>
+                <h4>Photo Frame & Overlay</h4>
+                <p>ใส่กรอบภาพตรางาน ข้อมูลเวลาจบ ระยะทาง ชื่อนักวิ่ง อัตโนมัติ พร้อมแชร์ Social Media</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="check">✓</div>
+              <div>
+                <h4>Gallery บนเว็บไซต์งาน</h4>
+                <p>แกลเลอรี่ภาพรวมของงานบน Checkrace.com พร้อม Highlight Album และภาพบรรยากาศ</p>
+              </div>
+            </div>
           </div>
-          <div class="portfolio-overlay"><div><h4>Koh Yao Noi Scenic Marathon</h4><p>Phang Nga, Thailand</p></div></div>
-        </div>
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#FF5252,#E53935);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">Chiangmai<br>Scenic Marathon</span>
-          </div>
-          <div class="portfolio-overlay"><div><h4>Chiangmai Scenic Marathon</h4><p>Chiang Mai, Thailand</p></div></div>
-        </div>
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#757575,#424242);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">Phetchaburi<br>Scenic Marathon</span>
-          </div>
-          <div class="portfolio-overlay"><div><h4>Phetchaburi Scenic Marathon</h4><p>Phetchaburi, Thailand</p></div></div>
-        </div>
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#C62828,#B71C1C);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">THAIATHON<br>Virtual Run</span>
-          </div>
-          <div class="portfolio-overlay"><div><h4>THAIATHON Virtual Run</h4><p>Nationwide, Thailand</p></div></div>
-        </div>
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#E53935,#FF5252);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">Rayong Scenic<br>Half Marathon</span>
-          </div>
-          <div class="portfolio-overlay"><div><h4>Rayong Scenic Half Marathon</h4><p>Rayong, Thailand</p></div></div>
         </div>
       </div>
     </div>

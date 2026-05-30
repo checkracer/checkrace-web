@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ผลงาน — Checkrace</title>
+  <title>คำถามที่พบบ่อย — Checkrace</title>
   <link rel="icon" type="image/png" href="https://checkrace.com/checkrace_LOGO2.png">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -22,7 +22,6 @@
         <a href="merchandise.html" data-i18n="nav_merch">อุปกรณ์แข่งขัน</a>
         <a href="dashboard.html" data-i18n="nav_dashboard">Dashboard</a>
         <a href="about.html" data-i18n="nav_about">เกี่ยวกับเรา</a>
-        <a href="portfolio.html" class="active" data-i18n="nav_portfolio">ผลงาน</a>
         <a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a>
         <div class="lang-switcher"><button data-lang="th" class="active">TH</button><button data-lang="en">EN</button><button data-lang="jp">JP</button><button data-lang="cn">CN</button></div>
       </div>
@@ -33,51 +32,73 @@
   <!-- PAGE HEADER -->
   <section class="page-header">
     <div class="container">
-      <span class="section-label" style="color: var(--cr-red-light);" data-i18n="portfolio_label">ผลงาน</span>
-      <h1 data-i18n="portfolio_title">งานที่ผ่านมาของเรา</h1>
-      <p data-i18n="portfolio_desc">ประสบการณ์จัดงานวิ่งระดับมืออาชีพกว่า 200 งาน ทั่วประเทศ</p>
+      <span class="section-label" style="color: var(--cr-red-light);" data-i18n="faq_label">คำถามที่พบบ่อย</span>
+      <h1 data-i18n="faq_title">มีคำถาม? เรามีคำตอบ</h1>
     </div>
   </section>
 
-  <!-- PORTFOLIO GRID -->
+  <!-- FAQ -->
   <section class="section">
     <div class="container">
-      <div class="portfolio-grid">
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#E53935,#C62828);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">Khao Rang<br>Scenic Marathon</span>
+      <div class="faq-list">
+        <div class="faq-item fade-in">
+          <button class="faq-question">
+            <span data-i18n="faq_q1">Checkrace ให้บริการอะไรบ้าง?</span>
+            <span class="icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer">
+            <p data-i18n="faq_a1">Checkrace ให้บริการครบวงจร ได้แก่ ระบบ Virtual Run Platform, ระบบจับเวลาด้วยชิป RFID, และรับผลิตอุปกรณ์การแข่งขัน เช่น เสื้อวิ่ง เหรียญรางวัล บิบ</p>
           </div>
-          <div class="portfolio-overlay"><div><h4>Khao Rang Scenic Marathon</h4><p>Phuket, Thailand</p></div></div>
         </div>
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#424242,#212121);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">Koh Yao Noi<br>Scenic Marathon</span>
+
+        <div class="faq-item fade-in">
+          <button class="faq-question">
+            <span data-i18n="faq_q2">ระบบจับเวลารองรับนักวิ่งได้กี่คน?</span>
+            <span class="icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer">
+            <p data-i18n="faq_a2">ระบบจับเวลาของเรารองรับนักวิ่งได้มากกว่า 30,000 คนต่องาน พร้อมแสดงผลแบบ Real-time บนหน้าจอและแอปพลิเคชัน</p>
           </div>
-          <div class="portfolio-overlay"><div><h4>Koh Yao Noi Scenic Marathon</h4><p>Phang Nga, Thailand</p></div></div>
         </div>
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#FF5252,#E53935);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">Chiangmai<br>Scenic Marathon</span>
+
+        <div class="faq-item fade-in">
+          <button class="faq-question">
+            <span data-i18n="faq_q3">สามารถสั่งผลิตเหรียญดีไซน์พิเศษได้หรือไม่?</span>
+            <span class="icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer">
+            <p data-i18n="faq_a3">ได้ครับ เรามีทีมออกแบบพร้อมรับผลิตเหรียญตามดีไซน์ที่ต้องการ รวมถึงเหรียญ Finisher Medal, Series Medal, และเหรียญพิเศษ</p>
           </div>
-          <div class="portfolio-overlay"><div><h4>Chiangmai Scenic Marathon</h4><p>Chiang Mai, Thailand</p></div></div>
         </div>
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#757575,#424242);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">Phetchaburi<br>Scenic Marathon</span>
+
+        <div class="faq-item fade-in">
+          <button class="faq-question">
+            <span data-i18n="faq_q4">ค่าบริการเท่าไหร่?</span>
+            <span class="icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer">
+            <p data-i18n="faq_a4">ค่าบริการขึ้นอยู่กับรูปแบบงานและจำนวนนักวิ่ง กรุณาติดต่อทีมงานเพื่อรับใบเสนอราคาเฉพาะงานของคุณ</p>
           </div>
-          <div class="portfolio-overlay"><div><h4>Phetchaburi Scenic Marathon</h4><p>Phetchaburi, Thailand</p></div></div>
         </div>
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#C62828,#B71C1C);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">THAIATHON<br>Virtual Run</span>
+
+        <div class="faq-item fade-in">
+          <button class="faq-question">
+            <span data-i18n="faq_q5">Virtual Run Platform ทำงานอย่างไร?</span>
+            <span class="icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+          </button>
+          <div class="faq-answer">
+            <p data-i18n="faq_a5">นักวิ่งสมัครผ่านเว็บไซต์ Checkrace เลือกระยะทาง วิ่งตามเงื่อนไข ส่งผลผ่านแอป และรอรับ Race Pack ที่บ้าน ง่ายและสะดวก</p>
           </div>
-          <div class="portfolio-overlay"><div><h4>THAIATHON Virtual Run</h4><p>Nationwide, Thailand</p></div></div>
-        </div>
-        <div class="portfolio-item fade-in">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#E53935,#FF5252);display:flex;align-items:center;justify-content:center;">
-            <span style="color:white;font-size:1.2rem;font-weight:700;text-align:center;padding:1rem;">Rayong Scenic<br>Half Marathon</span>
-          </div>
-          <div class="portfolio-overlay"><div><h4>Rayong Scenic Half Marathon</h4><p>Rayong, Thailand</p></div></div>
         </div>
       </div>
     </div>
