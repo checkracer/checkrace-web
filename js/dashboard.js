@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   renderEvents('all');
   initEventTabs();
-  initKpiCounters();
+  // KPI counters now handled by main.js initCounters() — works on .kpi-number too
 
   // Charts wait for Chart.js
   if (typeof Chart !== 'undefined') {

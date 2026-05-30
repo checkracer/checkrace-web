@@ -107,9 +107,9 @@ function initScrollAnimations() {
   });
 }
 
-/* --- Animated Counters --- */
+/* --- Animated Counters (works on both .stat-number and .kpi-number) --- */
 function initCounters() {
-  const counters = document.querySelectorAll('.stat-number');
+  const counters = document.querySelectorAll('.stat-number, .kpi-number');
   if (!counters.length) return;
 
   const observer = new IntersectionObserver((entries) => {
@@ -119,7 +119,7 @@ function initCounters() {
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.5 });
+  }, { threshold: 0.3 });
 
   counters.forEach(counter => observer.observe(counter));
 }
