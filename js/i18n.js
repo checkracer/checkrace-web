@@ -29,6 +29,7 @@ const translations = {
     nav_org_timing: "ระบบจับเวลา",
     nav_org_vr: "Virtual Run Platform",
     nav_org_sponsors: "สปอนเซอร์",
+    nav_org_cc: "Check Control",
     nav_about_us: "เกี่ยวกับเรา",
 
     // Dashboard
@@ -106,6 +107,8 @@ const translations = {
     svc_virtual_desc: "แพลตฟอร์มจัดงานวิ่ง Virtual Run ครบวงจร ตั้งแต่ระบบสมัคร รับผล และจัดส่ง Race Pack ถึงบ้าน",
     svc_timing_title: "ระบบจับเวลา",
     svc_timing_desc: "ระบบจับเวลาด้วยชิป RFID มาตรฐานสากล แม่นยำ รวดเร็ว รองรับนักวิ่งได้หลายหมื่นคน",
+    svc_cc_title: "Check Control — ศูนย์บัญชาการวันแข่ง",
+    svc_cc_desc: "แพลตฟอร์มบริหารการแข่งขันแบบเรียลไทม์ — ไทม์ไลน์ปฏิบัติการ ระบบสื่อสาร POC ติดตาม GPS และแจ้งเตือนความปลอดภัยในวันแข่ง",
     svc_foto_title: "Checkrace Foto",
     svc_foto_desc: "ระบบถ่ายภาพงานวิ่งอัตโนมัติ ค้นหาด้วยเลขบิบหรือ AI Face Recognition ดาวน์โหลดได้ทันที",
     svc_foto_detail_title: "ถ่ายภาพงานวิ่ง ค้นหาง่าย ดาวน์โหลดเร็ว",
@@ -268,6 +271,7 @@ const translations = {
     nav_org_timing: "Timing System",
     nav_org_vr: "Virtual Run Platform",
     nav_org_sponsors: "Sponsors Expert",
+    nav_org_cc: "Check Control",
     nav_about_us: "About Us",
 
     // Dashboard
@@ -342,6 +346,8 @@ const translations = {
     svc_virtual_desc: "Complete virtual run platform — from registration to result tracking and race pack delivery to your door.",
     svc_timing_title: "Timing System",
     svc_timing_desc: "International-standard RFID chip timing system. Accurate, fast, supporting tens of thousands of runners.",
+    svc_cc_title: "Check Control — Race-Day Mission Control",
+    svc_cc_desc: "A real-time race management platform — operation timeline, POC communications, GPS tracking and safety alerts on event day.",
     svc_foto_title: "Checkrace Foto",
     svc_foto_desc: "Automated race photography system. Search by bib number or AI Face Recognition, download instantly.",
     svc_foto_detail_title: "Race Photography — Easy Search, Fast Download",
@@ -498,6 +504,7 @@ const translations = {
     nav_org_timing: "計時システム",
     nav_org_vr: "バーチャルランプラットフォーム",
     nav_org_sponsors: "スポンサーシップ",
+    nav_org_cc: "Check Control",
     nav_about_us: "会社概要",
 
     // Dashboard
@@ -572,6 +579,8 @@ const translations = {
     svc_virtual_desc: "登録からリザルト管理、レースパックの配送まで、完全なバーチャルランプラットフォーム。",
     svc_timing_title: "計時システム",
     svc_timing_desc: "国際基準のRFIDチップ計時システム。正確で高速、数万人のランナーに対応。",
+    svc_cc_title: "Check Control — レース当日の指令センター",
+    svc_cc_desc: "リアルタイムのレース運営プラットフォーム — オペレーションタイムライン、POC通信、GPS追跡、当日の安全アラート。",
     svc_foto_title: "Checkrace フォト",
     svc_foto_desc: "自動レースフォトシステム。ゼッケン番号またはAI顔認識で検索、すぐにダウンロード。",
     svc_foto_detail_title: "レース写真 — 簡単検索、高速ダウンロード",
@@ -728,6 +737,7 @@ const translations = {
     nav_org_timing: "计时系统",
     nav_org_vr: "虚拟跑平台",
     nav_org_sponsors: "赞助商专家",
+    nav_org_cc: "Check Control",
     nav_about_us: "关于我们",
 
     // Dashboard
@@ -802,6 +812,8 @@ const translations = {
     svc_virtual_desc: "从报名到成绩管理，再到赛事包配送，一站式虚拟跑平台。",
     svc_timing_title: "计时系统",
     svc_timing_desc: "国际标准RFID芯片计时系统，精准、快速，支持数万名跑者。",
+    svc_cc_title: "Check Control — 赛事日指挥中心",
+    svc_cc_desc: "实时赛事管理平台 — 运营时间线、POC通信、GPS追踪和赛事日安全预警。",
     svc_foto_title: "Checkrace 赛事摄影",
     svc_foto_desc: "自动赛事摄影系统，通过号码布或AI人脸识别搜索，即时下载。",
     svc_foto_detail_title: "赛事摄影 — 轻松搜索，快速下载",
