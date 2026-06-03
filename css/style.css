@@ -883,6 +883,17 @@ p { margin-bottom: var(--space-md); }
   margin: 0 auto;
 }
 
+.faq-group-title {
+  max-width: 800px;
+  margin: var(--space-3xl) auto var(--space-sm);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--cr-red);
+}
+.faq-group-title:first-child {
+  margin-top: 0;
+}
+
 .faq-item {
   border-bottom: 1px solid var(--cr-gray-100);
 }
@@ -924,7 +935,7 @@ p { margin-bottom: var(--space-md); }
 }
 
 .faq-item.active .faq-answer {
-  max-height: 500px;
+  max-height: 800px;
 }
 
 /* --- About Page --- */
