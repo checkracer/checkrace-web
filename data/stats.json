@@ -1,0 +1,55 @@
+{
+  "generated": "2026-06-05",
+  "source": "getAllResults (Apps Script) — aggregated by scripts/build-stats.js",
+  "totals": {
+    "finishers": 162723,
+    "male": 101935,
+    "female": 58443,
+    "events": 52,
+    "nationalities": 125,
+    "firstYear": 2016,
+    "lastYear": 2026
+  },
+  "years": [
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ],
+  "finishersByYear": [
+    2718,
+    4917,
+    5682,
+    9748,
+    4714,
+    10579,
+    18701,
+    30309,
+    43693,
+    22455
+  ],
+  "eventsByYear": [
+    1,
+    2,
+    2,
+    4,
+    2,
+    4,
+    7,
+    10,
+    13,
+    5
+  ],
+  "seriesCount": {
+    "Scenic": 69557,
+    "Korat": 16942,
+    "KhaoYai": 9185,
+    "UPLeague": 67039
+  }
+}

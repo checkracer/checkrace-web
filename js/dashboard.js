@@ -19,6 +19,44 @@ async function loadEvents() {
   }
 }
 
+// ===== Real Stats (precomputed from live timing results) =====
+// data/stats.json is built by scripts/build-stats.js from the Apps Script
+// getAllResults feed (34MB) — aggregated so the Dashboard loads instantly.
+let raceStats = null;
+
+async function loadStats() {
+  try {
+    const res = await fetch('data/stats.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error('Failed to load stats JSON');
+    raceStats = await res.json();
+    return raceStats;
+  } catch (err) {
+    console.warn('[Checkrace] loadStats — using static fallback:', err.message);
+    raceStats = null;
+    return null;
+  }
+}
+
+// Push real totals into the KPI cards (events held + total finishers),
+// then re-run the counter animation so the live numbers tick up.
+function applyStatsKpis() {
+  if (!raceStats || !raceStats.totals) return;
+  const t = raceStats.totals;
+  const setByLabel = (i18nKey, val) => {
+    if (!Number.isFinite(val)) return;
+    const label = document.querySelector('.kpi-label[data-i18n="' + i18nKey + '"]');
+    const card = label && label.closest('.kpi-card');
+    const el = card && card.querySelector('.kpi-number');
+    if (!el) return;
+    el.setAttribute('data-target', val);
+    if (typeof animateKpi === 'function') animateKpi(el);
+    else el.textContent = val.toLocaleString() + (el.getAttribute('data-suffix') || '');
+  };
+  // 3rd KPI = events held all-time, 4th KPI = total finishers
+  setByLabel('kpi_total_events', t.events);
+  setByLabel('kpi_medals', t.finishers);
+}
+
 // ===== Render Event Cards =====
 function renderEvents(filter = 'all') {
   const grid = document.getElementById('eventsGrid');
@@ -80,13 +118,21 @@ function initRunnersChart() {
   gradient.addColorStop(0, 'rgba(229,57,53,0.35)');
   gradient.addColorStop(1, 'rgba(229,57,53,0.02)');
 
+  // Real finishers-per-year from data/stats.json, else static fallback.
+  const labels = (raceStats && raceStats.years)
+    ? raceStats.years.map(String)
+    : ['2020', '2021', '2022', '2023', '2024', '2025', '2026 (Target)'];
+  const data = (raceStats && raceStats.finishersByYear)
+    ? raceStats.finishersByYear
+    : [25000, 18000, 35000, 55000, 72000, 80000, 100000];
+
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026 (Target)'],
+      labels: labels,
       datasets: [{
         label: 'นักวิ่ง',
-        data: [25000, 18000, 35000, 55000, 72000, 80000, 100000],
+        data: data,
         borderColor: colorRed,
         backgroundColor: gradient,
         borderWidth: 3,
@@ -129,22 +175,29 @@ function initEventsChart() {
   const ctx = document.getElementById('eventsChart');
   if (!ctx) return;
 
+  // Real events-per-year from data/stats.json, else static fallback.
+  const labels = (raceStats && raceStats.years)
+    ? raceStats.years.map(String)
+    : ['2020', '2021', '2022', '2023', '2024', '2025', '2026'];
+  const data = (raceStats && raceStats.eventsByYear)
+    ? raceStats.eventsByYear
+    : [8, 6, 12, 16, 18, 20, 26];
+  // Ramp opacity from light → solid red across however many years we have.
+  const n = data.length;
+  const bg = data.map((_, i) => {
+    if (i === n - 1) return colorRed;
+    const a = 0.45 + (0.45 * i) / Math.max(1, n - 1);
+    return 'rgba(229,57,53,' + a.toFixed(2) + ')';
+  });
+
   new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['2020', '2021', '2022', '2023', '2024', '2025', '2026'],
+      labels: labels,
       datasets: [{
         label: 'งาน',
-        data: [8, 6, 12, 16, 18, 20, 26],
-        backgroundColor: [
-          'rgba(229,57,53,0.5)',
-          'rgba(229,57,53,0.55)',
-          'rgba(229,57,53,0.6)',
-          'rgba(229,57,53,0.7)',
-          'rgba(229,57,53,0.8)',
-          'rgba(229,57,53,0.9)',
-          colorRed
-        ],
+        data: data,
+        backgroundColor: bg,
         borderRadius: 8,
         borderSkipped: false,
         barThickness: 32
@@ -242,14 +295,16 @@ function animateKpi(el) {
 
 // ===== Init on DOM Ready =====
 document.addEventListener('DOMContentLoaded', async () => {
-  // Load real event data first (from data/events-2026.json)
-  await loadEvents();
+  // Load 2026 schedule + real aggregate stats in parallel
+  await Promise.all([loadEvents(), loadStats()]);
 
   renderEvents('all');
   initEventTabs();
-  // KPI counters now handled by main.js initCounters() — works on .kpi-number too
 
-  // Charts wait for Chart.js
+  // Override KPI counters with real totals (events held + finishers)
+  applyStatsKpis();
+
+  // Charts wait for Chart.js — now fed by raceStats when available
   if (typeof Chart !== 'undefined') {
     initRunnersChart();
     initEventsChart();
