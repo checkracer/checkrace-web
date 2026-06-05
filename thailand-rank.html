@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thailand Runner Rank — อันดับนักวิ่งไทย | Checkrace</title>
+  <meta name="description" content="อันดับนักวิ่งไทยระดับประเทศ รวมผลการแข่งขันจากงานวิ่งมาตรฐานที่จับเวลาด้วยระบบ chip จัดอันดับเวลาที่ดีที่สุดในระยะ 42K / 21K / 10K / 5K">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .rank-wrap { padding-bottom: var(--space-3xl); }
+    .rank-controls {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+      justify-content: center; margin-bottom: var(--space-xl);
+    }
+    .seg { display: inline-flex; background: white; border: 1px solid var(--cr-gray-300);
+      border-radius: var(--radius-full); overflow: hidden; }
+    .seg button { padding: 9px 18px; font-weight: 600; font-size: .88rem; background: transparent;
+      color: var(--cr-gray-700); border: none; transition: all var(--transition-fast); }
+    .seg button.active { background: var(--cr-red); color: #fff; }
+    .rank-select { padding: 10px 16px; border: 1px solid var(--cr-gray-300); border-radius: var(--radius-full);
+      font-family: inherit; font-size: .88rem; font-weight: 600; color: var(--cr-gray-700); background: #fff; }
+    .rank-search { padding: 10px 18px; border: 1px solid var(--cr-gray-300); border-radius: var(--radius-full);
+      font-family: inherit; font-size: .9rem; min-width: 220px; }
+    .rank-count { text-align: center; color: var(--cr-gray-600); font-size: .9rem; margin-bottom: var(--space-md); }
+    .rank-count b { color: var(--cr-red); }
+
+    .rank-table-card { background: #fff; border: 1px solid var(--cr-gray-200); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm); overflow: hidden; }
+    table.rank-table { width: 100%; border-collapse: collapse; }
+    .rank-table thead th { text-align: left; font-size: .72rem; letter-spacing: .04em; text-transform: uppercase;
+      color: var(--cr-gray-500); font-weight: 700; padding: 14px 16px; border-bottom: 1px solid var(--cr-gray-200); background: var(--cr-gray-50); }
+    .rank-table tbody td { padding: 13px 16px; border-bottom: 1px solid var(--cr-gray-100); font-size: .95rem; vertical-align: middle; }
+    .rank-table tbody tr:last-child td { border-bottom: none; }
+    .rank-table tbody tr:hover { background: var(--cr-gray-50); }
+    .rk { font-weight: 800; color: var(--cr-gray-400); width: 64px; font-variant-numeric: tabular-nums; }
+    .rk-1 { color: #C9A227; } .rk-2 { color: #8C8C8C; } .rk-3 { color: #B06A3B; }
+    .rk-medal { font-size: 1.05rem; }
+    .rn-name { font-weight: 600; color: var(--cr-black); }
+    .rn-flag { margin-right: 7px; font-size: 1.05rem; }
+    .rn-sex { display: inline-block; margin-left: 7px; font-size: .68rem; font-weight: 700; padding: 1px 6px;
+      border-radius: 999px; vertical-align: middle; }
+    .rn-sex.M { background: #E3F2FD; color: #1565C0; } .rn-sex.F { background: #FCE4EC; color: #C2185B; }
+    .rn-time { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--cr-black); white-space: nowrap; }
+    .rn-ev { display: inline-block; font-size: .75rem; font-weight: 700; padding: 2px 9px; border-radius: 999px;
+      background: var(--cr-red); color: #fff; opacity: .92; }
+    .rn-yr { color: var(--cr-gray-500); font-size: .8rem; margin-left: 6px; }
+    .rank-state { padding: 40px; text-align: center; color: var(--cr-gray-500); }
+    .rank-note { margin-top: var(--space-xl); background: var(--cr-gray-50); border: 1px solid var(--cr-gray-200);
+      border-radius: var(--radius-lg); padding: 20px 24px; }
+    .rank-note h4 { margin: 0 0 6px; color: var(--cr-black); font-size: 1rem; }
+    .rank-note p { margin: 0; color: var(--cr-gray-600); font-size: .88rem; line-height: 1.6; }
+    @media (max-width: 640px) {
+      .rank-table .col-ev { display: none; }
+      .rank-search { min-width: 0; flex: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo" aria-label="Checkrace">
+        <img src="assets/logo.svg" alt="Checkrace" class="brand-mark">
+      </a>
+
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav_home">หน้าแรก</a>
+
+        <div class="nav-dropdown" data-page="runner">
+          <button class="nav-dropdown-toggle" data-i18n="nav_for_runner">สำหรับนักวิ่ง</button>
+          <div class="nav-dropdown-menu">
+            <a href="https://run.checkrace.com" target="_blank" rel="noopener" class="external" data-i18n="nav_runner_reg">สมัครวิ่ง</a>
+            <a href="https://vr.checkrace.com" target="_blank" rel="noopener" class="external" data-i18n="nav_runner_vr">Virtual Run</a>
+            <a href="foto.html" data-i18n="nav_runner_foto">ภาพถ่ายนักวิ่ง</a>
+            <a href="thailand-rank.html" data-i18n="nav_runner_rank">อันดับนักวิ่งไทย</a>
+          </div>
+        </div>
+
+        <div class="nav-dropdown" data-page="organizer">
+          <button class="nav-dropdown-toggle" data-i18n="nav_for_organizer">สำหรับผู้จัดงาน</button>
+          <div class="nav-dropdown-menu">
+            <a href="registration.html" data-i18n="nav_org_reg">ระบบรับสมัคร</a>
+            <a href="timing.html" data-i18n="nav_org_timing">ระบบจับเวลา</a>
+            <a href="check-control.html" data-i18n="nav_org_cc">Check Control</a>
+            <a href="virtual-run.html" data-i18n="nav_org_vr">Virtual Run Platform</a>
+            <a href="sponsors.html" data-i18n="nav_org_sponsors">สปอนเซอร์</a>
+          </div>
+        </div>
+
+        <a href="https://shop.checkrace.com" target="_blank" rel="noopener" data-i18n="nav_shop">ร้านค้า</a>
+
+        <div class="nav-dropdown" data-page="about">
+          <button class="nav-dropdown-toggle" data-i18n="nav_about">เกี่ยวกับเรา</button>
+          <div class="nav-dropdown-menu">
+            <a href="about.html" data-i18n="nav_about_us">เกี่ยวกับเรา</a>
+            <a href="dashboard.html" data-i18n="nav_stats">Stats</a>
+            <a href="portfolio.html" data-i18n="nav_portfolio">ผลงาน</a>
+            <a href="faq.html" data-i18n="nav_faq">คำถามที่พบบ่อย</a>
+            <a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a>
+          </div>
+        </div>
+
+        <div class="lang-switcher">
+          <button data-lang="th" class="active">TH</button>
+          <button data-lang="en">EN</button>
+          <button data-lang="jp">JP</button>
+          <button data-lang="cn">CN</button>
+        </div>
+      </div>
+
+      <button class="menu-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========== PAGE HEADER ========== -->
+  <section class="page-header">
+    <div class="container">
+      <span class="section-label" style="color: var(--cr-red-light);" data-i18n="rank_label">THAILAND RUNNER RANK</span>
+      <h1 data-i18n="rank_title">อันดับนักวิ่งไทย</h1>
+      <p data-i18n="rank_desc">รวมผลการแข่งขันจากงานวิ่งมาตรฐานที่จับเวลาด้วยระบบ chip ทั่วประเทศ จัดอันดับเวลาที่ดีที่สุด (PB) ของนักวิ่งแต่ละคนในแต่ละระยะ</p>
+    </div>
+  </section>
+
+  <!-- ========== RANKING ========== -->
+  <section class="rank-wrap">
+    <div class="container">
+
+      <!-- distance tabs -->
+      <div class="events-tabs" id="distTabs">
+        <button class="event-tab active" data-dist="42K">42K</button>
+        <button class="event-tab" data-dist="21K">21K</button>
+        <button class="event-tab" data-dist="10K">10K</button>
+        <button class="event-tab" data-dist="5K">5K</button>
+      </div>
+
+      <!-- controls -->
+      <div class="rank-controls">
+        <div class="seg" id="scopeSeg">
+          <button data-scope="tha" class="active" data-i18n="rank_scope_thai">นักวิ่งไทย</button>
+          <button data-scope="all" data-i18n="rank_scope_all">ทุกสัญชาติ</button>
+        </div>
+        <select class="rank-select" id="genderSel">
+          <option value="all" data-i18n="rank_gender_all">ทุกเพศ</option>
+          <option value="M" data-i18n="rank_gender_m">ชาย</option>
+          <option value="F" data-i18n="rank_gender_f">หญิง</option>
+        </select>
+        <input class="rank-search" id="searchInp" type="search" data-i18n-placeholder="rank_search_ph" placeholder="ค้นหาชื่อนักวิ่ง">
+      </div>
+
+      <div class="rank-count" id="rankCount"></div>
+
+      <div class="rank-table-card">
+        <table class="rank-table">
+          <thead>
+            <tr>
+              <th data-i18n="rank_col_rank">อันดับ</th>
+              <th data-i18n="rank_col_name">ชื่อนักวิ่ง</th>
+              <th data-i18n="rank_col_time">เวลาดีที่สุด</th>
+              <th class="col-ev" data-i18n="rank_col_event">งานที่ทำเวลา</th>
+            </tr>
+          </thead>
+          <tbody id="rankBody">
+            <tr><td colspan="4" class="rank-state" data-i18n="rank_loading">กำลังโหลดอันดับ…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rank-note">
+        <h4 data-i18n="rank_method_title">อันดับนี้คำนวณอย่างไร</h4>
+        <p data-i18n="rank_method_desc">แต่ละคนนับเวลาที่ดีที่สุดเพียงครั้งเดียวต่อระยะ คัดจาก chip time (กรอง gun time และเวลาที่ผิดปกติออก) ข้อมูลจากระบบจับเวลา Checkrace และงานมาตรฐานที่เผยแพร่ผลผ่าน RaceResult</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="navbar-logo footer-logo" aria-label="Checkrace">
+            <img src="assets/logo.svg" alt="Checkrace" class="brand-mark">
+          </a>
+          <p data-i18n="footer_desc">Running Solution Platform ครบวงจร สำหรับผู้จัดงานวิ่งทั่วประเทศ</p>
+        </div>
+        <div>
+          <h4 data-i18n="footer_services">บริการ</h4>
+          <ul>
+            <li><a href="registration.html" data-i18n="nav_registration">ระบบรับสมัคร</a></li>
+            <li><a href="virtual-run.html" data-i18n="nav_virtual">Virtual Run</a></li>
+            <li><a href="timing.html" data-i18n="nav_timing">ระบบจับเวลา</a></li>
+            <li><a href="foto.html" data-i18n="nav_foto">ภาพถ่ายนักวิ่ง</a></li>
+            <li><a href="merchandise.html" data-i18n="nav_merch">อุปกรณ์แข่งขัน</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footer_company">บริษัท</h4>
+          <ul>
+            <li><a href="about.html" data-i18n="nav_about">เกี่ยวกับเรา</a></li>
+            <li><a href="thailand-rank.html" data-i18n="nav_runner_rank">อันดับนักวิ่งไทย</a></li>
+            <li><a href="dashboard.html" data-i18n="nav_dashboard">Dashboard</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 data-i18n="footer_support">ช่วยเหลือ</h4>
+          <ul>
+            <li><a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a></li>
+            <li><a href="faq.html" data-i18n="nav_faq">คำถามที่พบบ่อย</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span><span data-i18n="footer_rights">© 2026 Checkrace. สงวนลิขสิทธิ์.</span> <span data-i18n="footer_by">โดย Checkrace Co., Ltd.</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/thailand-rank.js"></script>
+</body>
+</html>
