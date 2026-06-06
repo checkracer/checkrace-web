@@ -356,9 +356,12 @@ RACE.secToTime = function(s) {
   return h + ':' + (m<10?'0':'') + m + ':' + (sec<10?'0':'') + sec;
 };
 
-// Min realistic times per distance (seconds)
+// Min realistic times per distance (seconds) — anything faster is a bad read
 RACE.MIN_RACE_TIME = {5:720, 10:1500, 21.1:3300, 42.195:6900};
-RACE.MAX_CHIP_GUN_DIFF = 2700; // 45 min
+// Max realistic times per distance (seconds) — anything slower is a gun time
+// recorded as time-of-day (clock), not elapsed. Generous, past any real cutoff.
+RACE.MAX_RACE_TIME = {5:10800, 10:14400, 21.1:18000, 42.195:28800};
+RACE.MAX_CHIP_GUN_DIFF = 2700; // 45 min — beyond any real start-line delay at these races
 
 RACE.isGunTimeOfDay = function(r) {
   const ct = RACE.timeToSec(r.chip_time), gt = RACE.timeToSec(r.gun_time);
@@ -370,26 +373,48 @@ RACE.isTimeSuspicious = function(sec, dist) {
   const minT = RACE.MIN_RACE_TIME[dist];
   return minT && sec < minT;
 };
-
-RACE.bestTime = function(r) {
-  const ct = RACE.timeToSec(r.chip_time);
-  const dist = parseFloat(r.distance) || 0;
-  if (ct < 999999 && !RACE.isTimeSuspicious(ct, dist)) return ct;
-  const gt = RACE.timeToSec(r.gun_time);
-  if (gt < 999999 && !RACE.isGunTimeOfDay(r) && !RACE.isTimeSuspicious(gt, dist)) return gt;
-  if (ct < 999999) return 999990;
-  if (gt < 999999 && !RACE.isGunTimeOfDay(r)) return gt;
-  return 999999;
+RACE.isImplausiblyLong = function(sec, dist) {
+  const maxT = RACE.MAX_RACE_TIME[dist];
+  return maxT && sec > maxT;
 };
 
-RACE.bestTimeStr = function(r) {
+// Resolve the trustworthy finish time. chip is preferred, BUT when chip and
+// gun disagree by more than 45 min one of them is corrupt:
+//   • gun absurdly long  → gun is a time-of-day clock value → trust chip
+//   • gun a plausible elapsed time → chip is a bad mat read → trust gun
+// Returns { sec, src } (sec 999990 = present but unusable, 999999 = none).
+RACE._resolve = function(r) {
   const ct = RACE.timeToSec(r.chip_time);
-  const dist = parseFloat(r.distance) || 0;
-  if (ct < 999999 && !RACE.isTimeSuspicious(ct, dist)) return r.chip_time;
   const gt = RACE.timeToSec(r.gun_time);
-  if (gt < 999999 && !RACE.isGunTimeOfDay(r) && !RACE.isTimeSuspicious(gt, dist)) return r.gun_time + ' (gun)';
-  if (ct < 999999) return r.chip_time + ' ⚠️';
-  if (gt < 999999 && !RACE.isGunTimeOfDay(r)) return r.gun_time + ' (gun)';
+  const dist = parseFloat(r.distance) || 0;
+  const cOk = ct < 999999, gOk = gt < 999999;
+
+  if (cOk && gOk && Math.abs(gt - ct) > RACE.MAX_CHIP_GUN_DIFF) {
+    if (RACE.isImplausiblyLong(gt, dist)) {
+      // gun is time-of-day garbage → trust chip if it is a sane race time
+      if (!RACE.isTimeSuspicious(ct, dist)) return { sec: ct, src: 'chip' };
+      return { sec: 999990, src: null };
+    }
+    // gun is a plausible elapsed time → chip is artificially fast → trust gun
+    if (!RACE.isTimeSuspicious(gt, dist) && !RACE.isImplausiblyLong(gt, dist)) return { sec: gt, src: 'gun' };
+    return { sec: 999990, src: null };
+  }
+
+  // consistent, or only one value present
+  if (cOk && !RACE.isTimeSuspicious(ct, dist)) return { sec: ct, src: 'chip' };
+  if (gOk && !RACE.isTimeSuspicious(gt, dist) && !RACE.isImplausiblyLong(gt, dist)) return { sec: gt, src: 'gun' };
+  if (cOk) return { sec: 999990, src: null };
+  if (gOk && !RACE.isImplausiblyLong(gt, dist)) return { sec: gt, src: 'gun' };
+  return { sec: 999999, src: null };
+};
+
+RACE.bestTime = function(r) { return RACE._resolve(r).sec; };
+
+RACE.bestTimeStr = function(r) {
+  const res = RACE._resolve(r);
+  if (res.src === 'chip') return r.chip_time;
+  if (res.src === 'gun') return r.gun_time + ' (gun)';
+  if (res.sec === 999990) return (r.chip_time || r.gun_time || '-') + ' ⚠️';
   return '-';
 };
 
