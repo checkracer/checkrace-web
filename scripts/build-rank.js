@@ -30,7 +30,7 @@ const RD_PATH = path.join(ROOT, 'assets', 'js', 'race-data.js');
 const REG_PATH = path.join(ROOT, 'data', 'rank-events.json');
 const OUT_PATH = path.join(ROOT, 'data', 'rankings.json');
 
-const TOP_N = 300;            // entries kept per distance per view (× 6 views)
+const DEFAULT_TOP_N = 300;    // entries kept per distance per view (× 6 views)
 const BUCKETS = { '42.195': '42K', '21.1': '21K', '10': '10K', '5': '5K' };
 const DIST_ORDER = ['42K', '21K', '10K', '5K'];
 
@@ -72,54 +72,85 @@ function flagToCode(v) {
   const m = String(v || '').match(/flags\/([A-Za-z]{2})\.gif/);
   return m ? m[1].toUpperCase() : '';
 }
+// pick the right public result list from the event config (event-specific names)
+function discoverList(cfg) {
+  const lists = (cfg.TabConfig && cfg.TabConfig.Lists) || [];
+  let best = lists.find((l) => /results/i.test(l.Name) && String(l.Contest) === '0');
+  if (!best) best = lists.find((l) => /results/i.test(l.Name));
+  if (!best) best = lists[0];
+  return best ? best.Name : '02-Results|Results';
+}
+// derive distance / gender hints from a group key like "#1_21K" or "#2_MALE"
+function keyHints(key, ctx) {
+  const token = String(key).replace(/^#\d+_/, '');
+  const out = { dist: ctx.dist, gender: ctx.gender };
+  const dm = token.match(/(\d+(?:\.\d+)?)\s*(?:K|km|กม|ไมล์|mile)?/i);
+  if (dm && /\d/.test(token)) out.dist = parseFloat(dm[1]);
+  if (/female|women|หญิง|^f$/i.test(token)) out.gender = 'F';
+  else if (/(^|[^fe])male|men|ชาย|^m$/i.test(token)) out.gender = 'M';
+  return out;
+}
 async function fetchRaceResult(ev, base, defaultList) {
   const id = ev.raceResultId;
   const cfg = await getJSON(`${base}/${id}/results/config?lang=en`);
   const key = cfg.key;
-  const contests = cfg.contests || {};
-  const list = ev.listname || defaultList;
-  const fields0 = [];
+  const list = ev.listname || discoverList(cfg) || defaultList;
+
+  // RR result lists nest as distance → (gender) → [rows]; fetch once (no contest)
+  let payload = null;
+  try {
+    payload = await getJSON(`${base}/${id}/results/list?lang=en`
+      + `&key=${encodeURIComponent(key)}&listname=${encodeURIComponent(list)}`);
+  } catch (e) { payload = null; }
+
+  const F = (payload && payload.DataFields) || [];
+  const idxLike = (...subs) => {
+    for (const s of subs) { const i = F.findIndex((f) => String(f).toUpperCase().includes(s.toUpperCase())); if (i >= 0) return i; }
+    return -1;
+  };
+  const iName = idxLike('DisplayName', 'Name', 'Lastname');
+  const iIoc = idxLike('IOCNAME', 'NATION.NAME');
+  const iFlag = idxLike('NATION.FLAG', 'NATION');
+  const iChip = idxLike('Finish.CHIP', 'CHIP', 'ChipTime', 'TotalTime');
+  const iGun = idxLike('Finish.GUN', 'GUN', 'GunTime');
+  const iSex = idxLike('MaleFemale', 'Sex', 'Gender');
+
   const rows = [];
-  for (const cid of Object.keys(contests)) {
-    const url = `${base}/${id}/results/list?lang=en&key=${encodeURIComponent(key)}`
-      + `&listname=${encodeURIComponent(list)}&contest=${encodeURIComponent(cid)}`;
-    let p;
-    try { p = await getJSON(url); } catch (e) { continue; }
-    if (!p || !Array.isArray(p.DataFields) || !p.data) continue;
-    const F = p.DataFields;
-    const idx = (...names) => { for (const n of names) { const i = F.indexOf(n); if (i >= 0) return i; } return -1; };
-    const iName = idx('DisplayName', 'Name', 'Lastname');
-    const iNat = idx('NATION.FLAG', 'Nation', 'NATION');
-    const iChip = idx('Finish.CHIP', 'ChipTime', 'TotalTime');
-    const iGun = idx('Finish.GUN', 'GunTime');
-    const iSex = idx('MaleFemale', 'Sex', 'Gender');
-    for (const [grp, list2] of Object.entries(p.data)) {
-      if (!Array.isArray(list2)) continue;
-      // group key looks like "#<grp>_<contestName>" — use the contest name for distance
-      const cname = contests[cid] || grp.split('_').slice(1).join('_');
-      const dm = String(cname).match(/(\d+(?:\.\d+)?)/);
-      const dist = dm ? parseFloat(dm[1]) : 0;
-      for (const row of list2) {
-        rows.push({
-          first_name: iName >= 0 ? row[iName] : '',
-          last_name: '',
-          gender: iSex >= 0 ? String(row[iSex] || '').toUpperCase().charAt(0) : '',
-          nationality: iNat >= 0 ? flagToCode(row[iNat]) : '',
-          distance: dist,
-          chip_time: iChip >= 0 ? row[iChip] : '',
-          gun_time: iGun >= 0 ? row[iGun] : (iChip >= 0 ? row[iChip] : ''),
-          event: ev.code || ('RR' + id),
-          _year: ev.year,
-          _source: 'raceresult:' + id
-        });
-      }
+  const emit = (arr, ctx) => {
+    for (const row of arr) {
+      if (!Array.isArray(row)) continue;
+      const chip = iChip >= 0 ? row[iChip] : '';
+      let nat = iIoc >= 0 ? row[iIoc] : '';
+      if (!nat && iFlag >= 0) nat = flagToCode(row[iFlag]);
+      let gender = ctx.gender || '';
+      if (!gender && iSex >= 0) gender = String(row[iSex] || '').toUpperCase().charAt(0);
+      rows.push({
+        first_name: iName >= 0 ? row[iName] : '',
+        last_name: '',
+        gender: gender,
+        nationality: String(nat || '').toUpperCase(),
+        distance: ctx.dist || 0,
+        chip_time: chip,
+        gun_time: iGun >= 0 ? row[iGun] : chip,
+        event: ev.code || ('RR' + id),
+        _year: ev.year,
+        _source: 'raceresult:' + id
+      });
     }
-  }
+  };
+  const walk = (node, ctx) => {
+    if (Array.isArray(node)) { emit(node, ctx); return; }
+    if (node && typeof node === 'object') {
+      for (const [k, v] of Object.entries(node)) walk(v, keyHints(k, ctx));
+    }
+  };
+  if (payload && payload.data) walk(payload.data, { dist: 0, gender: '' });
   return rows;
 }
 
 // ---- Aggregate rows → best-time leaderboard per distance ----
-function buildLeaderboard(rows, RACE, META) {
+function buildLeaderboard(rows, RACE, META, topN) {
+  const TOP_N = topN || DEFAULT_TOP_N;
   // perDist[label] = Map(runnerKey -> bestEntry)
   const perDist = {};
   DIST_ORDER.forEach((d) => perDist[d] = new Map());
@@ -197,30 +228,47 @@ function buildLeaderboard(rows, RACE, META) {
   if (!Array.isArray(baseRows)) throw new Error('Checkrace payload is not an array');
   console.log('  Checkrace rows:', baseRows.length);
 
-  // 2) External RaceResult events from the registry
-  const ext = (reg.raceResultEvents || []).filter((e) => e && e.raceResultId && e.included !== false);
+  // Hide specific Checkrace event codes if curated out in the admin page
+  const exclude = new Set((reg.checkraceExclude || []).map((c) => String(c).toUpperCase()));
+  if (exclude.size) {
+    const before = baseRows.length;
+    baseRows = baseRows.filter((r) => !exclude.has(String(r.event || '').toUpperCase()));
+    console.log(`  excluded ${exclude.size} Checkrace event(s) → dropped ${before - baseRows.length} rows`);
+  }
+
+  // 2) External events from the registry (timing-system aware)
+  const ext = (reg.externalEvents || reg.raceResultEvents || []).filter((e) => e && e.included !== false);
   let extRows = [];
   const extEvents = [];
   for (const ev of ext) {
-    try {
-      const rows = await fetchRaceResult(ev, reg.raceResultBase, reg.raceResultList);
-      console.log(`  + RaceResult ${ev.code || ev.raceResultId}: ${rows.length} rows`);
-      extRows = extRows.concat(rows);
-      extEvents.push({ code: ev.code, name: ev.name, raceResultId: ev.raceResultId, rows: rows.length });
-    } catch (e) {
-      console.warn(`  ! RaceResult ${ev.code || ev.raceResultId} failed: ${e.message}`);
+    const timing = (ev.timing || (ev.raceResultId ? 'raceresult' : '')).toLowerCase();
+    const label = ev.code || ev.raceResultId || ev.name || '?';
+    if (timing === 'raceresult' && ev.raceResultId) {
+      try {
+        const rows = await fetchRaceResult(ev, reg.raceResultBase, reg.raceResultList);
+        console.log(`  + RaceResult ${label}: ${rows.length} rows`);
+        extRows = extRows.concat(rows);
+        extEvents.push({ code: ev.code, name: ev.name, timing, raceResultId: ev.raceResultId, rows: rows.length });
+      } catch (e) {
+        console.warn(`  ! RaceResult ${label} failed: ${e.message}`);
+      }
+    } else {
+      // mylaps / sportstats / other — no fetcher yet; record but skip
+      console.warn(`  ~ ${label}: timing "${timing || 'unknown'}" not yet supported by build-rank — skipped`);
+      extEvents.push({ code: ev.code, name: ev.name, timing: timing || 'unknown', skipped: true });
     }
   }
 
-  const { byDistance, summary } = buildLeaderboard(baseRows.concat(extRows), RACE, META);
+  const topN = (reg.criteria && reg.criteria.topN) || DEFAULT_TOP_N;
+  const { byDistance, summary } = buildLeaderboard(baseRows.concat(extRows), RACE, META, topN);
 
   const out = {
     generated: new Date().toISOString().slice(0, 10),
     distances: DIST_ORDER,
-    topN: TOP_N,
+    topN: topN,
     sources: {
       checkrace: baseRows.length,
-      raceResultEvents: extEvents
+      externalEvents: extEvents
     },
     summary,
     byDistance

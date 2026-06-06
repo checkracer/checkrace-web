@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Rank Admin — ทะเบียนงาน Thailand Runner Rank | Checkrace</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { background: var(--cr-gray-50); }
+    .admin-head { background: linear-gradient(135deg, var(--cr-red) 0%, var(--cr-red-dark) 100%); color:#fff; padding: 26px 0; }
+    .admin-head h1 { margin: 0 0 4px; font-size: 1.5rem; }
+    .admin-head p { margin: 0; opacity: .92; font-size: .9rem; }
+    .admin-head a.back { color:#fff; opacity:.85; font-size:.82rem; text-decoration:underline; }
+    .admin-wrap { max-width: 1080px; margin: 0 auto; padding: 24px 20px 80px; }
+    .card { background:#fff; border:1px solid var(--cr-gray-200); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 22px; margin-bottom: 22px; }
+    .card h2 { margin:0 0 4px; font-size: 1.12rem; color: var(--cr-black); display:flex; align-items:center; gap:8px; }
+    .card .sub { color: var(--cr-gray-600); font-size:.85rem; margin: 0 0 16px; }
+    .badge-grp { display:inline-block; font-size:.7rem; font-weight:800; padding:2px 9px; border-radius:999px; }
+    .badge-cr { background:#FFEBEE; color:var(--cr-red-dark); }
+    .badge-ext { background:#E8F5E9; color:#2E7D32; }
+    .steps { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .steps span { background:rgba(255,255,255,.18); border-radius:999px; padding:5px 12px; font-size:.78rem; }
+    label.fld { display:block; font-size:.78rem; font-weight:700; color:var(--cr-gray-600); margin-bottom:4px; }
+    input.t, select.t { padding:9px 12px; border:1px solid var(--cr-gray-300); border-radius:8px; font-family:inherit; font-size:.9rem; width:100%; box-sizing:border-box; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+    .crit-grid { display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+    .dist-checks { display:flex; gap:14px; flex-wrap:wrap; }
+    .dist-checks label { font-weight:600; font-size:.9rem; display:flex; align-items:center; gap:6px; }
+
+    table.tbl { width:100%; border-collapse:collapse; }
+    .tbl th { text-align:left; font-size:.7rem; text-transform:uppercase; letter-spacing:.04em; color:var(--cr-gray-500); font-weight:700; padding:9px 10px; border-bottom:1px solid var(--cr-gray-200); }
+    .tbl td { padding:8px 10px; border-bottom:1px solid var(--cr-gray-100); font-size:.9rem; vertical-align:middle; }
+    .tbl tbody tr:hover { background: var(--cr-gray-50); }
+    .cr-toolbar { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:12px; align-items:center; }
+    .mini { font-size:.78rem; color:var(--cr-gray-500); }
+    .ev-card { border:1px solid var(--cr-gray-200); border-radius:12px; padding:16px; margin-bottom:14px; background:var(--cr-gray-50); }
+    .ev-card .grid { display:grid; grid-template-columns: 2fr 1.3fr 1.3fr 1fr; gap:12px; }
+    .ev-card .grid2 { display:grid; grid-template-columns: 2fr 1fr auto; gap:12px; margin-top:12px; align-items:end; }
+    .ev-actions { display:flex; gap:8px; align-items:center; }
+    .pill { font-size:.74rem; font-weight:700; padding:3px 9px; border-radius:999px; }
+    .pill.ok { background:#E8F5E9; color:#2E7D32; } .pill.warn { background:#FFF3E0; color:#E65100; } .pill.err { background:#FFEBEE; color:#C62828; }
+    .btn-sm { padding:7px 14px; font-size:.82rem; font-weight:700; border-radius:8px; border:1px solid var(--cr-gray-300); background:#fff; color:var(--cr-gray-700); }
+    .btn-sm:hover { border-color:var(--cr-red); color:var(--cr-red); }
+    .btn-red { background:var(--cr-red); color:#fff; border:none; padding:10px 18px; font-weight:700; border-radius:8px; }
+    .btn-red:hover { background:var(--cr-red-dark); }
+    .btn-x { color:#C62828; background:#FFEBEE; border:none; border-radius:8px; padding:7px 11px; font-weight:800; }
+    .export-bar { position:sticky; bottom:0; background:#fff; border-top:2px solid var(--cr-red); padding:14px 20px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; box-shadow:0 -4px 16px rgba(0,0,0,.06); }
+    textarea.json { width:100%; height:160px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.78rem; border:1px solid var(--cr-gray-300); border-radius:8px; padding:12px; box-sizing:border-box; }
+    code.cmd { display:block; background:#1A1A1A; color:#7CFC9A; padding:10px 14px; border-radius:8px; font-size:.82rem; margin-top:8px; overflow-x:auto; }
+    .toast { position:fixed; top:18px; right:18px; background:#2E7D32; color:#fff; padding:12px 18px; border-radius:8px; font-size:.88rem; opacity:0; transform:translateY(-8px); transition:all .2s; z-index:50; }
+    .toast.show { opacity:1; transform:translateY(0); }
+    @media (max-width:760px){ .crit-grid,.ev-card .grid{grid-template-columns:1fr;} .ev-card .grid2{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <div class="admin-head">
+    <div class="admin-wrap" style="padding-bottom:0;padding-top:0">
+      <a href="thailand-rank.html" class="back">← กลับหน้า Thailand Runner Rank</a>
+      <h1>🏃 Rank Admin — ทะเบียนงาน</h1>
+      <p>จัดการรายชื่องาน + Event ID และเกณฑ์ ที่ป้อนเข้า Thailand Runner Rank</p>
+      <div class="steps">
+        <span>1. แก้ทะเบียน</span><span>2. ดาวน์โหลด rank-events.json</span>
+        <span>3. วางทับใน data/</span><span>4. รัน build-rank.js</span><span>5. commit + push</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-wrap">
+
+    <!-- CRITERIA -->
+    <div class="card">
+      <h2>⚙️ เกณฑ์การจัดอันดับ</h2>
+      <p class="sub">ระยะที่จัดอันดับ และจำนวนสูงสุดที่เก็บต่อ list (ต่อระยะ ต่อเพศ ต่อขอบเขต)</p>
+      <div class="crit-grid">
+        <div>
+          <label class="fld">ระยะที่แสดง</label>
+          <div class="dist-checks" id="critDist">
+            <label><input type="checkbox" value="42K"> 42K</label>
+            <label><input type="checkbox" value="21K"> 21K</label>
+            <label><input type="checkbox" value="10K"> 10K</label>
+            <label><input type="checkbox" value="5K"> 5K</label>
+          </div>
+          <p class="mini" style="margin-top:8px">* หน้าเว็บมีแท็บ 4 ระยะคงที่ — ค่านี้ใช้กำหนดระยะที่ build</p>
+        </div>
+        <div>
+          <label class="fld">Top N ต่อ list</label>
+          <input class="t" id="critTopN" type="number" min="50" max="2000" step="50">
+          <label class="fld" style="margin-top:12px">รหัสสัญชาติที่นับเป็น "ไทย"</label>
+          <input class="t" id="critThai" placeholder="THA, TH">
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECKRACE GROUP -->
+    <div class="card">
+      <h2>กลุ่มงาน Checkrace <span class="badge-grp badge-cr">CHECKRACE</span></h2>
+      <p class="sub">งานที่จับเวลาโดย Checkrace (อยู่ในฐาน getAllResults อยู่แล้ว) — เป็นฐานหลักเสมอ ติ๊กออกเพื่อ "ซ่อน" งานนั้นจากอันดับ</p>
+      <div class="cr-toolbar">
+        <input class="t" id="crSearch" style="max-width:260px" placeholder="ค้นหา code / ชื่อ / ซีรีส์">
+        <span class="mini" id="crCount"></span>
+        <button class="btn-sm" id="crAll">เลือกทั้งหมด</button>
+        <button class="btn-sm" id="crNone">ซ่อนทั้งหมด</button>
+      </div>
+      <div style="max-height:340px;overflow:auto;border:1px solid var(--cr-gray-100);border-radius:8px">
+        <table class="tbl">
+          <thead><tr><th style="width:48px">แสดง</th><th>Code</th><th>ชื่องาน</th><th style="width:70px">ปี</th><th>ซีรีส์</th></tr></thead>
+          <tbody id="crBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- EXTERNAL GROUP -->
+    <div class="card">
+      <h2>กลุ่มงานนอก Checkrace <span class="badge-grp badge-ext">EXTERNAL</span></h2>
+      <p class="sub">งานมาตรฐานที่จับเวลาด้วยระบบอื่น — เลือกงานที่จะให้แสดง พร้อม Event ID สำหรับดึงผล (อย่าใส่งานของ Checkrace ซ้ำ)</p>
+      <div id="extList"></div>
+      <button class="btn-sm" id="extAdd">+ เพิ่มงานนอก</button>
+    </div>
+
+    <!-- JSON PREVIEW -->
+    <div class="card">
+      <h2>📄 rank-events.json</h2>
+      <p class="sub">ผลลัพธ์ที่จะบันทึก — กด "อัปเดต preview" เพื่อดูล่าสุด</p>
+      <button class="btn-sm" id="refreshJson" style="margin-bottom:10px">↻ อัปเดต preview</button>
+      <textarea class="json" id="jsonOut" readonly></textarea>
+      <code class="cmd">cd "Web Site Creation/checkrace-web" &amp;&amp; node scripts/build-rank.js</code>
+    </div>
+  </div>
+
+  <div class="export-bar">
+    <button class="btn-red" id="btnDownload">⬇ ดาวน์โหลด rank-events.json</button>
+    <button class="btn-sm" id="btnCopy">คัดลอก JSON</button>
+    <span class="mini">วางทับ <b>data/rank-events.json</b> แล้วรัน <b>build-rank.js</b> เพื่อ regenerate อันดับ</span>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="assets/js/race-data.js"></script>
+  <script src="js/rank-admin.js"></script>
+</body>
+</html>

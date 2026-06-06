@@ -1,7 +1,13 @@
 {
-  "_comment": "Registry for Thailand Runner Rank. The Checkrace timing DB (getAllResults) is always the base. Add EXTERNAL standard events here (events NOT already in the Checkrace DB) by their public RaceResult Event ID, so scripts/build-rank.js can pull + merge them. Do NOT add Checkrace's own events here or finishers double-count.",
+  "_comment": "Registry for Thailand Runner Rank. Curate this with the admin page rank-admin.html (edit → download → commit → run: node scripts/build-rank.js). The Checkrace timing DB is always the base; 'checkraceExclude' hides specific Checkrace event codes. 'externalEvents' adds standard events NOT in the Checkrace DB by timing system + public event id. Do NOT add Checkrace's own events to externalEvents or finishers double-count.",
   "checkraceApi": "https://script.google.com/macros/s/AKfycbyZWTlSJObtk_nu0yJTon5PWFyf75K4kxvOP6LJIyXdE0FT2z5EdINM4IWtw5qm1SMMvg/exec",
   "raceResultBase": "https://my.raceresult.com",
   "raceResultList": "02-Results|Results",
-  "raceResultEvents": []
+  "criteria": {
+    "distances": ["42K", "21K", "10K", "5K"],
+    "topN": 300,
+    "thaiCodes": ["THA", "TH"]
+  },
+  "checkraceExclude": [],
+  "externalEvents": []
 }
