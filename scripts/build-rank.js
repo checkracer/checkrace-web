@@ -149,10 +149,16 @@ function reconcileGender(rows) {
 //   • gender from a column (SexMF) OR from the group key OR the age-group name
 //   • nationality from IOCNAME or a flag image (flags/XX.gif | /graphics/flags/XX.svg)
 //   • chip from NetTime/Finish.CHIP, gun from TimeOrStatus/Finish.GUN
+// Extract a 2-letter country from a flag image ref in any common shape:
+//   [img:flags/ET.gif] · [img:/graphics/flags/ET.svg] · .../png/th_black.png
 function flagToCode(v) {
-  const m = String(v || '').match(/flags\/([A-Za-z]{2})\.(?:gif|svg|png)/i);
+  const m = String(v || '').match(/\/([A-Za-z]{2})(?:[_-][a-z]+)?\.(?:gif|svg|png)/i);
   return m ? m[1].toUpperCase() : '';
 }
+// Non-finisher markers that can appear in a RaceResult status/rank cell.
+// (Not "Incomplete" — that can flag a real finisher who missed a split mat;
+//  their bogus 0:00:00 chip is rejected by the time checks anyway.)
+const NONFINISH = new Set(['DNF', 'DSQ', 'DNS', 'DQ']);
 function distFromName(n) {
   const s = String(n).toLowerCase();
   if (/half|ฮาล์ฟ/.test(s)) return 21.1;                 // "Half Marathon" → 21.1 (check before marathon)
@@ -222,7 +228,7 @@ async function fetchRaceResult(ev, base, defaultList) {
     };
     const iName = idxLike('DisplayName', 'Name', 'Lastname');
     const iIoc = idxLike('IOCNAME', 'NATION.NAME');
-    const iFlag = idxLike('NATION.FLAG', 'NATION');
+    const iFlag = idxLike('NATION.FLAG', 'NATION', 'CustomFlag', 'FLAG');
     const iChip = idxLike('NetTime', 'Finish.CHIP', 'CHIP', 'ChipTime');
     const iGun = idxLike('TimeOrStatus', 'Finish.GUN', 'GUN', 'TotalTime', 'GunTime');
     const iSex = idxLike('SexMF', 'MaleFemale', 'Sex', 'Gender');
@@ -230,6 +236,10 @@ async function fetchRaceResult(ev, base, defaultList) {
     const emit = (arr, ctx) => {
       for (const row of arr) {
         if (!Array.isArray(row)) continue;
+        // skip non-finishers — DNF/DSQ/Incomplete can carry a partial chip time
+        let nonfinish = false;
+        for (const cell of row) { if (NONFINISH.has(String(cell).trim().toUpperCase())) { nonfinish = true; break; } }
+        if (nonfinish) continue;
         const chip = iChip >= 0 ? row[iChip] : '';
         let nat = iIoc >= 0 ? row[iIoc] : '';
         if (!nat && iFlag >= 0) nat = flagToCode(row[iFlag]);
