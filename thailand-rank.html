@@ -49,6 +49,21 @@
     .rn-ev.ext::after { content: " \2197"; font-size: .7rem; }
     .rn-yr { color: var(--cr-gray-500); font-size: .8rem; margin-left: 6px; }
     .rank-legend { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; margin: 14px 0 2px; font-size: .8rem; color: var(--cr-gray-600); }
+    .view-seg { display: flex; justify-content: center; margin: 0 auto var(--space-lg); }
+    .view-seg button { padding: 10px 24px; }
+    /* age-group view */
+    .age-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 18px; }
+    .age-group { background: #fff; border: 1px solid var(--cr-gray-200); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .age-group-head { display: flex; align-items: baseline; justify-content: space-between; padding: 14px 16px; background: var(--cr-red); color: #fff; }
+    .age-group-head h3 { margin: 0; font-size: 1.05rem; }
+    .age-group-head .ag-n { font-size: .78rem; opacity: .9; }
+    .age-group table { width: 100%; border-collapse: collapse; }
+    .age-group td { padding: 9px 14px; border-bottom: 1px solid var(--cr-gray-100); font-size: .9rem; }
+    .age-group tr:last-child td { border-bottom: none; }
+    .age-group .agr { width: 40px; font-weight: 800; color: var(--cr-gray-400); font-variant-numeric: tabular-nums; }
+    .age-group .agr.m1 { color:#C9A227; } .age-group .agr.m2 { color:#8C8C8C; } .age-group .agr.m3 { color:#B06A3B; }
+    .age-group .agt { text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .age-group .age-empty { padding: 18px; text-align: center; color: var(--cr-gray-400); font-size: .85rem; }
     .rank-legend span { display: inline-flex; align-items: center; gap: 6px; }
     .lg-dot { width: 12px; height: 12px; border-radius: 999px; display: inline-block; }
     .lg-dot.cr { background: var(--cr-red); }
@@ -137,6 +152,12 @@
   <section class="rank-wrap">
     <div class="container">
 
+      <!-- view mode: overall leaderboard vs age-group view -->
+      <div class="seg view-seg" id="viewSeg">
+        <button data-view="overall" class="active" data-i18n="rank_view_overall">อันดับรวม</button>
+        <button data-view="age" data-i18n="rank_view_age">ตามกลุ่มอายุ</button>
+      </div>
+
       <!-- distance tabs -->
       <div class="events-tabs" id="distTabs">
         <button class="event-tab active" data-dist="42K">42K</button>
@@ -169,23 +190,28 @@
         <span><span class="lg-dot ext"></span><span data-i18n="rank_legend_ext">งานนอก (ดึงจากผลสาธารณะ)</span> ↗</span>
       </div>
 
-      <div class="rank-count" id="rankCount"></div>
-
-      <div class="rank-table-card">
-        <table class="rank-table">
-          <thead>
-            <tr>
-              <th data-i18n="rank_col_rank">อันดับ</th>
-              <th data-i18n="rank_col_name">ชื่อนักวิ่ง</th>
-              <th data-i18n="rank_col_time">เวลาดีที่สุด</th>
-              <th class="col-ev" data-i18n="rank_col_event">งานที่ทำเวลา</th>
-            </tr>
-          </thead>
-          <tbody id="rankBody">
-            <tr><td colspan="4" class="rank-state" data-i18n="rank_loading">กำลังโหลดอันดับ…</td></tr>
-          </tbody>
-        </table>
+      <!-- OVERALL VIEW -->
+      <div id="overallView">
+        <div class="rank-count" id="rankCount"></div>
+        <div class="rank-table-card">
+          <table class="rank-table">
+            <thead>
+              <tr>
+                <th data-i18n="rank_col_rank">อันดับ</th>
+                <th data-i18n="rank_col_name">ชื่อนักวิ่ง</th>
+                <th data-i18n="rank_col_time">เวลาดีที่สุด</th>
+                <th class="col-ev" data-i18n="rank_col_event">งานที่ทำเวลา</th>
+              </tr>
+            </thead>
+            <tbody id="rankBody">
+              <tr><td colspan="4" class="rank-state" data-i18n="rank_loading">กำลังโหลดอันดับ…</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <!-- AGE-GROUP VIEW -->
+      <div id="ageView" style="display:none"></div>
 
       <div class="rank-note">
         <h4 data-i18n="rank_method_title">อันดับนี้คำนวณอย่างไร</h4>

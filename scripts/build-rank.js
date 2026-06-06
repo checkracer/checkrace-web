@@ -31,6 +31,7 @@ const REG_PATH = path.join(ROOT, 'data', 'rank-events.json');
 const OUT_PATH = path.join(ROOT, 'data', 'rankings.json');
 
 const DEFAULT_TOP_N = 300;    // entries kept per distance per view (× 6 views)
+const AGE_TOP_N = 100;        // entries kept per (distance, scope, age bracket)
 const BUCKETS = { '42.195': '42K', '21.1': '21K', '10': '10K', '5': '5K' };
 const DIST_ORDER = ['42K', '21K', '10K', '5K'];
 
@@ -63,6 +64,26 @@ const getJSON = (url) => httpGet(url).then(JSON.parse);
 
 const THAI = new Set(['THA', 'TH']);
 const isThai = (nat) => THAI.has(String(nat || '').toUpperCase());
+
+// Canonical 10-year age brackets. Source events label age groups
+// inconsistently (and never give birth year), so map each label to a
+// 10-year bracket by the lower bound of its numeric range. Labels with no
+// age number ("Overall", "Male", "Elite", "") return '' → no bracket.
+const AGE_BRACKETS = ['U30', '30-39', '40-49', '50-59', '60-69', '70+'];
+function ageBracket(category) {
+  const t = String(category || '');
+  let lo = null;
+  const range = t.match(/(\d{2})\s*[-–]\s*(\d{2})/);
+  if (range) lo = parseInt(range[1], 10);
+  else { const plus = t.match(/(\d{2})\s*\+/); if (plus) lo = parseInt(plus[1], 10); }
+  if (lo == null) return '';
+  if (lo < 30) return 'U30';
+  if (lo < 40) return '30-39';
+  if (lo < 50) return '40-49';
+  if (lo < 60) return '50-59';
+  if (lo < 70) return '60-69';
+  return '70+';
+}
 const normName = (s) => String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
 const titleCase = (s) => String(s || '').trim().replace(/\s+/g, ' ')
   .replace(/\b\w/g, (c) => c.toUpperCase());
@@ -164,6 +185,7 @@ async function fetchRaceResult(ev, base, defaultList) {
           distance: ctx.dist || 0,
           chip_time: chip,
           gun_time: iGun >= 0 ? row[iGun] : chip,
+          category: iAge >= 0 ? row[iAge] : '',
           event: ev.code || ('RR' + id),
           _year: ev.year,
           _source: 'raceresult:' + id
@@ -212,14 +234,17 @@ function buildLeaderboard(rows, RACE, META, topN) {
         time: RACE.secToTime(sec),
         event: r.event || '',
         year: (meta && meta.year) || r._year || null,
-        src: r._source ? 'ext' : 'cr'   // cr = Checkrace timing, ext = external (RaceResult etc.)
+        src: r._source ? 'ext' : 'cr',  // cr = Checkrace timing, ext = external (RaceResult etc.)
+        ag: ageBracket(r.category)       // canonical 10-year bracket ('' if unknown)
       });
     }
   }
 
   const byDistance = {};
+  const byAge = {};
   const summary = {};
   const top = (arr) => arr.slice(0, TOP_N);
+  const topAge = (arr) => arr.slice(0, AGE_TOP_N);
   for (const d of DIST_ORDER) {
     const all = [...perDist[d].values()].sort((a, b) => a.sec - b.sec); // full, sorted
     const tha = all.filter((e) => isThai(e.nat));
@@ -233,6 +258,13 @@ function buildLeaderboard(rows, RACE, META, topN) {
       tha_M: top(tha.filter((e) => e.gender === 'M')),
       tha_F: top(tha.filter((e) => e.gender === 'F'))
     };
+    // Age-group view: top list per (scope, bracket); gender filtered client-side.
+    const byBracket = (list) => {
+      const o = {};
+      for (const b of AGE_BRACKETS) o[b] = topAge(list.filter((e) => e.ag === b));
+      return o;
+    };
+    byAge[d] = { all: byBracket(all), tha: byBracket(tha) };
     summary[d] = {
       runners: all.length, thai: tha.length,
       male: all.filter((e) => e.gender === 'M').length,
@@ -240,7 +272,7 @@ function buildLeaderboard(rows, RACE, META, topN) {
       external: all.filter((e) => e.src === 'ext').length
     };
   }
-  return { byDistance, summary };
+  return { byDistance, byAge, summary };
 }
 
 (async () => {
@@ -293,18 +325,20 @@ function buildLeaderboard(rows, RACE, META, topN) {
   }
 
   const topN = (reg.criteria && reg.criteria.topN) || DEFAULT_TOP_N;
-  const { byDistance, summary } = buildLeaderboard(baseRows.concat(extRows), RACE, META, topN);
+  const { byDistance, byAge, summary } = buildLeaderboard(baseRows.concat(extRows), RACE, META, topN);
 
   const out = {
     generated: new Date().toISOString().slice(0, 10),
     distances: DIST_ORDER,
     topN: topN,
+    ageBrackets: AGE_BRACKETS,
     sources: {
       checkrace: baseRows.length,
       externalEvents: extEvents
     },
     summary,
-    byDistance
+    byDistance,
+    byAge
   };
   fs.mkdirSync(path.dirname(OUT_PATH), { recursive: true });
   fs.writeFileSync(OUT_PATH, JSON.stringify(out));

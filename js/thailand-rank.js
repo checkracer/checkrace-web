@@ -10,8 +10,10 @@ const RANK = {
   scope: 'tha',     // 'tha' | 'all'
   gender: 'all',    // 'all' | 'M' | 'F'
   source: 'all',    // 'all' | 'cr' (Checkrace) | 'ext' (external)
+  view: 'overall',  // 'overall' | 'age'
   query: '',
-  MAX_ROWS: 300     // rows rendered into the DOM
+  MAX_ROWS: 300,    // rows rendered into the DOM (overall view)
+  AGE_SHOW: 10      // rows shown per age group (age view)
 };
 
 // IOC / ISO country code -> emoji flag (common running nationalities)
@@ -57,7 +59,16 @@ function rankedList() {
   return list.map((e, i) => Object.assign({ rank: i + 1 }, e));
 }
 
+// Dispatch between the overall leaderboard and the age-group view
 function render() {
+  if (!RANK.data) return;
+  const isAge = RANK.view === 'age';
+  document.getElementById('overallView').style.display = isAge ? 'none' : '';
+  document.getElementById('ageView').style.display = isAge ? '' : 'none';
+  if (isAge) renderAge(); else renderOverall();
+}
+
+function renderOverall() {
   const body = document.getElementById('rankBody');
   const countEl = document.getElementById('rankCount');
   if (!RANK.data) return;
@@ -96,11 +107,67 @@ function render() {
   body.innerHTML = rows;
 }
 
+function bracketLabel(b) {
+  if (b === 'U30') return tr('rank_age_u30', 'Under 30');
+  return b.replace('-', '–') + ' ' + tr('rank_age_yr', 'yrs');
+}
+
+// Age-group view: one card per 10-year bracket, top-N within the current
+// distance / scope / gender / source. Ranks recompute inside each group.
+function renderAge() {
+  const wrap = document.getElementById('ageView');
+  if (!RANK.data) return;
+  const brackets = RANK.data.ageBrackets || ['U30', '30-39', '40-49', '50-59', '60-69', '70+'];
+  const bd = (RANK.data.byAge && RANK.data.byAge[RANK.dist]) || null;
+  const scopeMap = bd ? (bd[RANK.scope] || bd.tha || {}) : {};
+  const q = RANK.query.trim().toLowerCase();
+
+  const cards = brackets.map(b => {
+    let list = (scopeMap[b] || []).slice();
+    if (RANK.gender === 'M' || RANK.gender === 'F') list = list.filter(e => e.gender === RANK.gender);
+    if (RANK.source === 'cr' || RANK.source === 'ext') list = list.filter(e => (e.src || 'cr') === RANK.source);
+    let ranked = list.map((e, i) => Object.assign({ rank: i + 1 }, e));   // rank within group
+    const total = ranked.length;
+    if (q) ranked = ranked.filter(e => e.name.toLowerCase().includes(q));
+
+    let inner;
+    if (!ranked.length) {
+      inner = '<div class="age-empty">' + tr('rank_age_empty', 'No runners') + '</div>';
+    } else {
+      inner = '<table>' + ranked.slice(0, RANK.AGE_SHOW).map(e => {
+        const m = e.rank <= 3 ? ' m' + e.rank : '';
+        const flag = flagEmoji(e.nat);
+        const ext = e.src === 'ext' ? '<span class="rn-ev ext" style="margin-left:6px">' + escapeHtml(e.event || '') + '</span>' : '';
+        const sex = (e.gender === 'M' || e.gender === 'F') ? '<span class="rn-sex ' + e.gender + '">' + e.gender + '</span>' : '';
+        return '<tr><td class="agr' + m + '">' + e.rank + '</td>'
+          + '<td>' + (flag ? '<span class="rn-flag">' + flag + '</span>' : '') + escapeHtml(e.name) + sex + ext + '</td>'
+          + '<td class="agt">' + e.time + '</td></tr>';
+      }).join('') + '</table>';
+    }
+    return '<div class="age-group">'
+      + '<div class="age-group-head"><h3>' + bracketLabel(b) + '</h3>'
+      + '<span class="ag-n">' + total.toLocaleString() + ' ' + tr('rank_runners', 'runners') + '</span></div>'
+      + inner + '</div>';
+  }).join('');
+
+  wrap.innerHTML = '<div class="age-grid">' + cards + '</div>'
+    + '<div class="rank-note" style="margin-top:var(--space-lg)"><p>' + tr('rank_age_note', '') + '</p></div>';
+}
+
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
 }
 
 function initControls() {
+  // view mode: overall ↔ by age group
+  document.querySelectorAll('#viewSeg button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#viewSeg button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      RANK.view = btn.dataset.view;
+      render();
+    });
+  });
   // distance tabs
   document.querySelectorAll('#distTabs .event-tab').forEach(tab => {
     tab.addEventListener('click', () => {
