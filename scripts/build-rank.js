@@ -162,6 +162,7 @@ function flagToCode(v) {
 const NONFINISH_RE = /^(DNF|DSQ|DNS|DQ)([ \-_]|$)/i;
 function distFromName(n) {
   const s = String(n).toLowerCase();
+  if (/\bmini\b|มินิ/.test(s)) return 10;                 // "Mini Marathon" = 10K (Thai convention) — check before marathon
   if (/half|ฮาล์ฟ/.test(s)) return 21.1;                 // "Half Marathon" → 21.1 (check before marathon)
   if (/marathon|full|มาราธอน/.test(s)) return 42.195;    // "Marathon" carries no number
   const m = s.match(/(\d+(?:\.\d+)?)/);
@@ -217,7 +218,8 @@ function planLists(cfg, ev) {
 function keyHints(key, ctx) {
   const token = String(key).replace(/^#\d+_/, '');
   const out = { dist: ctx.dist, gender: ctx.gender };
-  if (/half|ฮาล์ฟ/i.test(token)) out.dist = 21.1;
+  if (/\bmini\b|มินิ/i.test(token)) out.dist = 10;
+  else if (/half|ฮาล์ฟ/i.test(token)) out.dist = 21.1;
   else if (/marathon|full|มาราธอน/i.test(token)) out.dist = 42.195;
   else if (/\d/.test(token)) { const m = token.match(/(\d+(?:\.\d+)?)/); if (m) out.dist = parseFloat(m[1]); }
   const g = genderFromText(token); if (g) out.gender = g;
