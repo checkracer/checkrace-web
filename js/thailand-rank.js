@@ -137,10 +137,15 @@ function renderAge() {
       inner = '<table>' + ranked.slice(0, RANK.AGE_SHOW).map(e => {
         const m = e.rank <= 3 ? ' m' + e.rank : '';
         const flag = flagEmoji(e.nat);
-        const ext = e.src === 'ext' ? '<span class="rn-ev ext" style="margin-left:6px">' + escapeHtml(e.event || '') + '</span>' : '';
         const sex = (e.gender === 'M' || e.gender === 'F') ? '<span class="rn-sex ' + e.gender + '">' + e.gender + '</span>' : '';
+        // which event the best time was set at (red = Checkrace, outlined ↗ = external)
+        const evCls = e.src === 'ext' ? 'rn-ev ext' : 'rn-ev';
+        const ev = e.event
+          ? '<div class="ag-ev"><span class="' + evCls + '">' + escapeHtml(e.event) + '</span>'
+            + (e.year ? '<span class="rn-yr">' + e.year + '</span>' : '') + '</div>'
+          : '';
         return '<tr><td class="agr' + m + '">' + e.rank + '</td>'
-          + '<td>' + (flag ? '<span class="rn-flag">' + flag + '</span>' : '') + escapeHtml(e.name) + sex + ext + '</td>'
+          + '<td><div class="ag-nm">' + (flag ? '<span class="rn-flag">' + flag + '</span>' : '') + escapeHtml(e.name) + sex + '</div>' + ev + '</td>'
           + '<td class="agt">' + e.time + '</td></tr>';
       }).join('') + '</table>';
     }
