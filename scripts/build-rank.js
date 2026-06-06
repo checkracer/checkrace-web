@@ -209,6 +209,10 @@ function buildLeaderboard(rows, RACE, META, topN) {
   DIST_ORDER.forEach((d) => perDist[d] = new Map());
 
   for (const r of rows) {
+    // skip non-finishers — DSQ (disqualified) / DNF / DNS must never rank
+    const st = String(r.status || 'Finish').toUpperCase();
+    if (st === 'DSQ' || st === 'DQ' || st === 'DNF' || st === 'DNS') continue;
+
     const nd = RACE.normDist(parseFloat(r.distance) || 0);
     const label = BUCKETS[String(nd)];
     if (!label) continue;
