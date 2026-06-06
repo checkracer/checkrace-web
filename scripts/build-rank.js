@@ -174,17 +174,45 @@ function genderFromText(s) {
   return '';
 }
 // pick the best public "results" list from the event config; returns the list obj
+function listScore(l) {
+  const n = String(l.Name); let s = 0;
+  if (/overall/i.test(n)) s += 4;
+  if (/results/i.test(n)) s += 2; else if (/result/i.test(n)) s += 1;
+  if (/award|top\s*\d|age\s*group|gender|ceremony|winner|\bTH\b|thai/i.test(n)) s -= 5;
+  return s;
+}
 function pickList(cfg) {
   const lists = (cfg.TabConfig && cfg.TabConfig.Lists) || [];
   if (!lists.length) return { Name: '02-Results|Results', Contest: '' };
-  const score = (l) => {
-    const n = String(l.Name); let s = 0;
-    if (/overall/i.test(n)) s += 4;
-    if (/results/i.test(n)) s += 2; else if (/result/i.test(n)) s += 1;
-    if (/award|top\s*\d|age\s*group|gender|ceremony|\bTH\b/i.test(n)) s -= 5;
-    return s;
-  };
-  return lists.slice().sort((a, b) => score(b) - score(a))[0];
+  return lists.slice().sort((a, b) => listScore(b) - listScore(a))[0];
+}
+// Build the set of (listname, contest) to fetch. Handles all the shapes seen:
+//   • one all-distance list, Contest 0 → fetch once (distance from group keys)
+//   • one list with Contest 1..N variants → fetch per contest
+//   • SEPARATE per-distance lists (Results42K / Results21K / Results10K, all
+//     Contest 0) → fetch EACH (distance from the list name)
+function planLists(cfg, ev) {
+  const lists = (cfg.TabConfig && cfg.TabConfig.Lists) || [];
+  let cands;
+  if (ev.listname) cands = lists.filter((l) => l.Name === ev.listname);
+  else cands = lists.filter((l) => listScore(l) > 0);
+  if (!cands.length) cands = [pickList(cfg)];
+
+  const contests = cfg.contests || {};
+  const seen = new Set();
+  const plan = [];
+  for (const l of cands) {
+    if (seen.has(l.Name)) continue;
+    seen.add(l.Name);
+    const group = cands.filter((c) => c.Name === l.Name);
+    const hasC0 = group.some((c) => String(c.Contest || '') === '0' || String(c.Contest || '') === '');
+    if (hasC0) {
+      plan.push({ name: l.Name, contest: null, distHint: distFromName(l.Name) });
+    } else {
+      for (const cid of Object.keys(contests)) plan.push({ name: l.Name, contest: cid, distHint: distFromName(contests[cid]) });
+    }
+  }
+  return plan;
 }
 function keyHints(key, ctx) {
   const token = String(key).replace(/^#\d+_/, '');
@@ -199,24 +227,13 @@ async function fetchRaceResult(ev, base, defaultList) {
   const id = ev.raceResultId;
   const cfg = await getJSON(`${base}/${id}/results/config?lang=en`);
   const key = cfg.key;
-  const lists = (cfg.TabConfig && cfg.TabConfig.Lists) || [];
-  let chosen = ev.listname ? (lists.find((l) => l.Name === ev.listname) || { Name: ev.listname, Contest: '' }) : pickList(cfg);
-  const list = chosen.Name || defaultList || '02-Results|Results';
-  const contestSetting = String(chosen.Contest == null ? '' : chosen.Contest);
-  const url = (extra) => `${base}/${id}/results/list?lang=en&key=${encodeURIComponent(key)}`
-    + `&listname=${encodeURIComponent(list)}` + (extra || '');
-
-  // Contest-0 lists return everything in one call; otherwise loop the contests.
+  const plan = planLists(cfg, ev);
   const payloads = [];
-  if (contestSetting === '0' || contestSetting === '') {
-    try { payloads.push({ p: await getJSON(url()), distHint: 0 }); } catch (e) {}
-  }
-  if (!payloads.length) {
-    const contests = cfg.contests || {};
-    for (const cid of Object.keys(contests)) {
-      try { payloads.push({ p: await getJSON(url(`&contest=${encodeURIComponent(cid)}`)), distHint: distFromName(contests[cid]) }); }
-      catch (e) {}
-    }
+  for (const it of plan) {
+    const u = `${base}/${id}/results/list?lang=en&key=${encodeURIComponent(key)}`
+      + `&listname=${encodeURIComponent(it.name)}` + (it.contest ? `&contest=${encodeURIComponent(it.contest)}` : '');
+    try { const p = await getJSON(u); if (p && p.data && Array.isArray(p.DataFields)) payloads.push({ p, distHint: it.distHint }); }
+    catch (e) {}
   }
 
   const rows = [];
@@ -249,7 +266,7 @@ async function fetchRaceResult(ev, base, defaultList) {
     const iFlag = idxLike('NATION.FLAG', 'CustomFlag');
     // named chip/gun columns first; fall back to the generic TIME2 (net) / TIME1
     // (gun) columns only when no named time field exists.
-    let iChip = idxLike('Finish.CHIP', 'NetTime', 'ChipTime'); if (iChip < 0) iChip = idxExact('TIME2');
+    let iChip = idxLike('Finish.CHIP', 'NetTime', 'ChipTime'); if (iChip < 0) iChip = idxExact('TIME2', 'TIME');
     let iGun = idxLike('Finish.GUN', 'GunTimeWave', 'GunTime', 'TimeOrStatus'); if (iGun < 0) iGun = idxExact('TIME1');
     const iSex = idxLike('SexMF', 'MaleFemale');
     const iAge = idxLike('AGEGROUP', 'AgeGroup', 'Category');
