@@ -223,25 +223,35 @@ async function fetchRaceResult(ev, base, defaultList) {
   for (const { p, distHint } of payloads) {
     const F = (p && p.DataFields) || [];
     if (!F.length || !p.data) continue;
-    // A real column has a plain name; skip RaceResult formula columns (which
-    // contain [...]/(...) and can include words like "Gun" inside the formula).
-    const isField = (f) => { const s = String(f || ''); return s.length > 0 && !/[\[\]()]/.test(s); };
+    // Match a PRECISE token anywhere in the field name — works even when the
+    // column is a wrapper formula like "if([RANK1]>0;[Finish.CHIP];'-')" or
+    // "OrStatus([TIME2])". Tokens are specific (Finish.CHIP, GunTimeWave, …) so
+    // they never catch a stray word inside the rank formula ("GunStart").
     const idxLike = (...subs) => {
-      for (const s of subs) { const i = F.findIndex((f) => isField(f) && String(f).toUpperCase().includes(s.toUpperCase())); if (i >= 0) return i; }
+      for (const s of subs) { const i = F.findIndex((f) => String(f).toUpperCase().includes(s.toUpperCase())); if (i >= 0) return i; }
       return -1;
+    };
+    // The single variable a simple field/wrapper exposes — "OrStatus([TIME2])"
+    // → "TIME2", bare "TIME2" → "TIME2"; a multi-variable formula → ''. Used to
+    // exact-match the generic TIME1/TIME2 columns (primeworks/timit) safely.
+    const effVar = (f) => {
+      const s = String(f || ''); const vars = s.match(/\[([^\]]+)\]/g);
+      if (!vars) return s;
+      const u = [...new Set(vars.map((v) => v.replace(/[[\]]/g, '').replace(/\.[A-Za-z]+$/, '')))];
+      return u.length === 1 ? u[0] : '';
     };
     const idxExact = (...names) => {
-      for (const n of names) { const i = F.findIndex((f) => isField(f) && String(f).toUpperCase() === n.toUpperCase()); if (i >= 0) return i; }
+      for (const n of names) { const i = F.findIndex((f) => effVar(f).toUpperCase() === n.toUpperCase()); if (i >= 0) return i; }
       return -1;
     };
-    const iName = idxLike('DisplayName', 'Name', 'Lastname');
+    const iName = idxLike('DisplayName', 'Lastname', 'Name');
     const iIoc = idxLike('IOCNAME', 'NATION.NAME');
-    const iFlag = idxLike('NATION.FLAG', 'CustomFlag', 'FLAG', 'NATION');
-    // chip/net then gun. primeworks/timit lists use generic TIME2 (net) / TIME1
-    // (gun) columns — exact-match those only when no named time field exists.
-    let iChip = idxLike('NetTime', 'Finish.CHIP', 'ChipTime'); if (iChip < 0) iChip = idxExact('TIME2');
-    let iGun = idxLike('Finish.GUN', 'GunTime', 'TimeOrStatus'); if (iGun < 0) iGun = idxExact('TIME1');
-    const iSex = idxLike('SexMF', 'MaleFemale', 'Sex');
+    const iFlag = idxLike('NATION.FLAG', 'CustomFlag');
+    // named chip/gun columns first; fall back to the generic TIME2 (net) / TIME1
+    // (gun) columns only when no named time field exists.
+    let iChip = idxLike('Finish.CHIP', 'NetTime', 'ChipTime'); if (iChip < 0) iChip = idxExact('TIME2');
+    let iGun = idxLike('Finish.GUN', 'GunTimeWave', 'GunTime', 'TimeOrStatus'); if (iGun < 0) iGun = idxExact('TIME1');
+    const iSex = idxLike('SexMF', 'MaleFemale');
     const iAge = idxLike('AGEGROUP', 'AgeGroup', 'Category');
     const emit = (arr, ctx) => {
       for (const row of arr) {
