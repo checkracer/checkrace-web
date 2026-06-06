@@ -39,9 +39,15 @@ function mapDist(cname) {
 }
 function discoverList(cfg) {
   const lists = (cfg.TabConfig && cfg.TabConfig.Lists) || [];
-  let best = lists.find(l => /results/i.test(l.Name) && String(l.Contest) === '0');
-  if (!best) best = lists.find(l => /results/i.test(l.Name));
-  if (!best) best = lists[0];
+  if (!lists.length) return '02-Results|Results';
+  const score = (l) => {
+    const n = String(l.Name); let s = 0;
+    if (/overall/i.test(n)) s += 4;
+    if (/results/i.test(n)) s += 2; else if (/result/i.test(n)) s += 1;
+    if (/award|top\s*\d|age\s*group|gender|ceremony|\bTH\b/i.test(n)) s -= 5;
+    return s;
+  };
+  const best = lists.slice().sort((a, b) => score(b) - score(a))[0];
   return best ? best.Name : '02-Results|Results';
 }
 

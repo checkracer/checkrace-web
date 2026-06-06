@@ -68,83 +68,114 @@ const titleCase = (s) => String(s || '').trim().replace(/\s+/g, ' ')
   .replace(/\b\w/g, (c) => c.toUpperCase());
 
 // ---- RaceResult public results → normalized rows (same schema as Checkrace) ----
+// Handles the format variety across organizers/years:
+//   • Contest-0 lists (fetch once) vs Contest-1 lists (loop contests)
+//   • flat arrays vs nested distance → gender → rows
+//   • gender from a column (SexMF) OR from the group key OR the age-group name
+//   • nationality from IOCNAME or a flag image (flags/XX.gif | /graphics/flags/XX.svg)
+//   • chip from NetTime/Finish.CHIP, gun from TimeOrStatus/Finish.GUN
 function flagToCode(v) {
-  const m = String(v || '').match(/flags\/([A-Za-z]{2})\.gif/);
+  const m = String(v || '').match(/flags\/([A-Za-z]{2})\.(?:gif|svg|png)/i);
   return m ? m[1].toUpperCase() : '';
 }
-// pick the right public result list from the event config (event-specific names)
-function discoverList(cfg) {
-  const lists = (cfg.TabConfig && cfg.TabConfig.Lists) || [];
-  let best = lists.find((l) => /results/i.test(l.Name) && String(l.Contest) === '0');
-  if (!best) best = lists.find((l) => /results/i.test(l.Name));
-  if (!best) best = lists[0];
-  return best ? best.Name : '02-Results|Results';
+function distFromName(n) {
+  const m = String(n).match(/(\d+(?:\.\d+)?)/);
+  return m ? parseFloat(m[1]) : 0;
 }
-// derive distance / gender hints from a group key like "#1_21K" or "#2_MALE"
+function genderFromText(s) {
+  const t = String(s || '');
+  if (/female|women|หญิง/i.test(t)) return 'F';
+  if (/male|men|ชาย/i.test(t)) return 'M';
+  return '';
+}
+// pick the best public "results" list from the event config; returns the list obj
+function pickList(cfg) {
+  const lists = (cfg.TabConfig && cfg.TabConfig.Lists) || [];
+  if (!lists.length) return { Name: '02-Results|Results', Contest: '' };
+  const score = (l) => {
+    const n = String(l.Name); let s = 0;
+    if (/overall/i.test(n)) s += 4;
+    if (/results/i.test(n)) s += 2; else if (/result/i.test(n)) s += 1;
+    if (/award|top\s*\d|age\s*group|gender|ceremony|\bTH\b/i.test(n)) s -= 5;
+    return s;
+  };
+  return lists.slice().sort((a, b) => score(b) - score(a))[0];
+}
 function keyHints(key, ctx) {
   const token = String(key).replace(/^#\d+_/, '');
   const out = { dist: ctx.dist, gender: ctx.gender };
-  const dm = token.match(/(\d+(?:\.\d+)?)\s*(?:K|km|กม|ไมล์|mile)?/i);
-  if (dm && /\d/.test(token)) out.dist = parseFloat(dm[1]);
-  if (/female|women|หญิง|^f$/i.test(token)) out.gender = 'F';
-  else if (/(^|[^fe])male|men|ชาย|^m$/i.test(token)) out.gender = 'M';
+  if (/\d/.test(token)) { const m = token.match(/(\d+(?:\.\d+)?)/); if (m) out.dist = parseFloat(m[1]); }
+  const g = genderFromText(token); if (g) out.gender = g;
   return out;
 }
 async function fetchRaceResult(ev, base, defaultList) {
   const id = ev.raceResultId;
   const cfg = await getJSON(`${base}/${id}/results/config?lang=en`);
   const key = cfg.key;
-  const list = ev.listname || discoverList(cfg) || defaultList;
+  const lists = (cfg.TabConfig && cfg.TabConfig.Lists) || [];
+  let chosen = ev.listname ? (lists.find((l) => l.Name === ev.listname) || { Name: ev.listname, Contest: '' }) : pickList(cfg);
+  const list = chosen.Name || defaultList || '02-Results|Results';
+  const contestSetting = String(chosen.Contest == null ? '' : chosen.Contest);
+  const url = (extra) => `${base}/${id}/results/list?lang=en&key=${encodeURIComponent(key)}`
+    + `&listname=${encodeURIComponent(list)}` + (extra || '');
 
-  // RR result lists nest as distance → (gender) → [rows]; fetch once (no contest)
-  let payload = null;
-  try {
-    payload = await getJSON(`${base}/${id}/results/list?lang=en`
-      + `&key=${encodeURIComponent(key)}&listname=${encodeURIComponent(list)}`);
-  } catch (e) { payload = null; }
-
-  const F = (payload && payload.DataFields) || [];
-  const idxLike = (...subs) => {
-    for (const s of subs) { const i = F.findIndex((f) => String(f).toUpperCase().includes(s.toUpperCase())); if (i >= 0) return i; }
-    return -1;
-  };
-  const iName = idxLike('DisplayName', 'Name', 'Lastname');
-  const iIoc = idxLike('IOCNAME', 'NATION.NAME');
-  const iFlag = idxLike('NATION.FLAG', 'NATION');
-  const iChip = idxLike('Finish.CHIP', 'CHIP', 'ChipTime', 'TotalTime');
-  const iGun = idxLike('Finish.GUN', 'GUN', 'GunTime');
-  const iSex = idxLike('MaleFemale', 'Sex', 'Gender');
+  // Contest-0 lists return everything in one call; otherwise loop the contests.
+  const payloads = [];
+  if (contestSetting === '0' || contestSetting === '') {
+    try { payloads.push({ p: await getJSON(url()), distHint: 0 }); } catch (e) {}
+  }
+  if (!payloads.length) {
+    const contests = cfg.contests || {};
+    for (const cid of Object.keys(contests)) {
+      try { payloads.push({ p: await getJSON(url(`&contest=${encodeURIComponent(cid)}`)), distHint: distFromName(contests[cid]) }); }
+      catch (e) {}
+    }
+  }
 
   const rows = [];
-  const emit = (arr, ctx) => {
-    for (const row of arr) {
-      if (!Array.isArray(row)) continue;
-      const chip = iChip >= 0 ? row[iChip] : '';
-      let nat = iIoc >= 0 ? row[iIoc] : '';
-      if (!nat && iFlag >= 0) nat = flagToCode(row[iFlag]);
-      let gender = ctx.gender || '';
-      if (!gender && iSex >= 0) gender = String(row[iSex] || '').toUpperCase().charAt(0);
-      rows.push({
-        first_name: iName >= 0 ? row[iName] : '',
-        last_name: '',
-        gender: gender,
-        nationality: String(nat || '').toUpperCase(),
-        distance: ctx.dist || 0,
-        chip_time: chip,
-        gun_time: iGun >= 0 ? row[iGun] : chip,
-        event: ev.code || ('RR' + id),
-        _year: ev.year,
-        _source: 'raceresult:' + id
-      });
-    }
-  };
-  const walk = (node, ctx) => {
-    if (Array.isArray(node)) { emit(node, ctx); return; }
-    if (node && typeof node === 'object') {
-      for (const [k, v] of Object.entries(node)) walk(v, keyHints(k, ctx));
-    }
-  };
-  if (payload && payload.data) walk(payload.data, { dist: 0, gender: '' });
+  for (const { p, distHint } of payloads) {
+    const F = (p && p.DataFields) || [];
+    if (!F.length || !p.data) continue;
+    const idxLike = (...subs) => {
+      for (const s of subs) { const i = F.findIndex((f) => String(f).toUpperCase().includes(s.toUpperCase())); if (i >= 0) return i; }
+      return -1;
+    };
+    const iName = idxLike('DisplayName', 'Name', 'Lastname');
+    const iIoc = idxLike('IOCNAME', 'NATION.NAME');
+    const iFlag = idxLike('NATION.FLAG', 'NATION');
+    const iChip = idxLike('NetTime', 'Finish.CHIP', 'CHIP', 'ChipTime');
+    const iGun = idxLike('TimeOrStatus', 'Finish.GUN', 'GUN', 'TotalTime', 'GunTime');
+    const iSex = idxLike('SexMF', 'MaleFemale', 'Sex', 'Gender');
+    const iAge = idxLike('AGEGROUP', 'AgeGroup', 'Category');
+    const emit = (arr, ctx) => {
+      for (const row of arr) {
+        if (!Array.isArray(row)) continue;
+        const chip = iChip >= 0 ? row[iChip] : '';
+        let nat = iIoc >= 0 ? row[iIoc] : '';
+        if (!nat && iFlag >= 0) nat = flagToCode(row[iFlag]);
+        let gender = ctx.gender || '';
+        if (!gender && iSex >= 0) gender = String(row[iSex] || '').toUpperCase().charAt(0);
+        if (!gender && iAge >= 0) gender = genderFromText(row[iAge]);
+        rows.push({
+          first_name: iName >= 0 ? row[iName] : '',
+          last_name: '',
+          gender: (gender === 'M' || gender === 'F') ? gender : '',
+          nationality: String(nat || '').toUpperCase(),
+          distance: ctx.dist || 0,
+          chip_time: chip,
+          gun_time: iGun >= 0 ? row[iGun] : chip,
+          event: ev.code || ('RR' + id),
+          _year: ev.year,
+          _source: 'raceresult:' + id
+        });
+      }
+    };
+    const walk = (node, ctx) => {
+      if (Array.isArray(node)) { emit(node, ctx); return; }
+      if (node && typeof node === 'object') { for (const [k, v] of Object.entries(node)) walk(v, keyHints(k, ctx)); }
+    };
+    walk(p.data, { dist: distHint || 0, gender: '' });
+  }
   return rows;
 }
 

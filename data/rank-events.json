@@ -9,5 +9,12 @@
     "thaiCodes": ["THA", "TH"]
   },
   "checkraceExclude": [],
-  "externalEvents": []
+  "externalEvents": [
+    { "code": "BS21-25", "name": "Bangsaen21 Half Marathon 2025", "timing": "raceresult", "raceResultId": "376487", "year": 2025, "province": "ชลบุรี", "distances": ["21K"], "included": true },
+    { "code": "BS21-24", "name": "Bangsaen21 Half Marathon 2024", "timing": "raceresult", "raceResultId": "320765", "year": 2024, "province": "ชลบุรี", "distances": ["21K"], "included": true },
+    { "code": "BS21-23", "name": "Bangsaen21 Half Marathon 2023", "timing": "raceresult", "raceResultId": "272256", "year": 2023, "province": "ชลบุรี", "distances": ["21K"], "included": true },
+    { "code": "BS21-22", "name": "Bangsaen21 Half Marathon 2022", "timing": "raceresult", "raceResultId": "228976", "year": 2022, "province": "ชลบุรี", "distances": ["21K"], "included": true },
+    { "code": "BS21-21", "name": "Bangsaen21 Half Marathon 2021", "timing": "raceresult", "raceResultId": "190249", "year": 2021, "province": "ชลบุรี", "distances": ["21K"], "included": true },
+    { "code": "BS21-19", "name": "Bangsaen21 Half Marathon 2019", "timing": "raceresult", "raceResultId": "144299", "year": 2019, "province": "ชลบุรี", "distances": ["21K"], "included": true }
+  ]
 }
