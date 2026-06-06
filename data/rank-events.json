@@ -35,6 +35,12 @@
     { "code": "BS42-22", "name": "Bangsaen42 Marathon 2022", "timing": "raceresult", "raceResultId": "193923", "year": 2022, "province": "ชลบุรี", "distances": ["42K"], "included": true },
     { "code": "BS42-19", "name": "Bangsaen42 Marathon 2019", "timing": "raceresult", "raceResultId": "141203", "year": 2019, "province": "ชลบุรี", "distances": ["42K"], "included": true },
 
+    { "code": "BS10-25", "name": "Bangsaen10 2025", "timing": "raceresult", "raceResultId": "342631", "year": 2025, "province": "ชลบุรี", "distances": ["10K", "5K"], "included": true },
+    { "code": "BS10-24", "name": "Bangsaen10 2024", "timing": "raceresult", "raceResultId": "291283", "year": 2024, "province": "ชลบุรี", "distances": ["10K", "5K"], "included": true },
+    { "code": "BS10-23", "name": "Bangsaen10 2023", "timing": "raceresult", "raceResultId": "261654", "year": 2023, "province": "ชลบุรี", "distances": ["10K", "5K"], "included": true },
+    { "code": "BS10-22", "name": "Bangsaen10 2022", "timing": "raceresult", "raceResultId": "219186", "year": 2022, "province": "ชลบุรี", "distances": ["10K", "5K"], "included": true },
+    { "code": "BS10-20", "name": "Bangsaen10 2020", "timing": "raceresult", "raceResultId": "147122", "year": 2020, "province": "ชลบุรี", "distances": ["10K", "5K"], "included": true },
+
     { "code": "SKM-25", "name": "Songkhla Marathon 2025", "timing": "raceresult", "raceResultId": "356172", "year": 2025, "province": "สงขลา", "distances": ["42K", "21K", "10K"], "included": true },
     { "code": "SKM-24", "name": "Songkhla International Marathon 2024", "timing": "raceresult", "raceResultId": "305115", "year": 2024, "province": "สงขลา", "distances": ["42K", "21K", "10K"], "included": true },
     { "code": "SKM-23", "name": "Songkhla International Marathon 2023", "timing": "raceresult", "raceResultId": "258624", "year": 2023, "province": "สงขลา", "distances": ["42K", "21K", "10K"], "included": true },
