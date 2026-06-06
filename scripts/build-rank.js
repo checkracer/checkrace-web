@@ -154,7 +154,10 @@ function flagToCode(v) {
   return m ? m[1].toUpperCase() : '';
 }
 function distFromName(n) {
-  const m = String(n).match(/(\d+(?:\.\d+)?)/);
+  const s = String(n).toLowerCase();
+  if (/half|ฮาล์ฟ/.test(s)) return 21.1;                 // "Half Marathon" → 21.1 (check before marathon)
+  if (/marathon|full|มาราธอน/.test(s)) return 42.195;    // "Marathon" carries no number
+  const m = s.match(/(\d+(?:\.\d+)?)/);
   return m ? parseFloat(m[1]) : 0;
 }
 function genderFromText(s) {
@@ -179,7 +182,9 @@ function pickList(cfg) {
 function keyHints(key, ctx) {
   const token = String(key).replace(/^#\d+_/, '');
   const out = { dist: ctx.dist, gender: ctx.gender };
-  if (/\d/.test(token)) { const m = token.match(/(\d+(?:\.\d+)?)/); if (m) out.dist = parseFloat(m[1]); }
+  if (/half|ฮาล์ฟ/i.test(token)) out.dist = 21.1;
+  else if (/marathon|full|มาราธอน/i.test(token)) out.dist = 42.195;
+  else if (/\d/.test(token)) { const m = token.match(/(\d+(?:\.\d+)?)/); if (m) out.dist = parseFloat(m[1]); }
   const g = genderFromText(token); if (g) out.gender = g;
   return out;
 }
