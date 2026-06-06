@@ -44,7 +44,15 @@
     .rn-time { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--cr-black); white-space: nowrap; }
     .rn-ev { display: inline-block; font-size: .75rem; font-weight: 700; padding: 2px 9px; border-radius: 999px;
       background: var(--cr-red); color: #fff; opacity: .92; }
+    /* external (non-Checkrace) event badge: outlined, not solid red */
+    .rn-ev.ext { background: #fff; color: var(--cr-gray-600); border: 1px solid var(--cr-gray-300); }
+    .rn-ev.ext::after { content: " \2197"; font-size: .7rem; }
     .rn-yr { color: var(--cr-gray-500); font-size: .8rem; margin-left: 6px; }
+    .rank-legend { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; margin: 14px 0 2px; font-size: .8rem; color: var(--cr-gray-600); }
+    .rank-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .lg-dot { width: 12px; height: 12px; border-radius: 999px; display: inline-block; }
+    .lg-dot.cr { background: var(--cr-red); }
+    .lg-dot.ext { background: #fff; border: 1px solid var(--cr-gray-400); }
     .rank-state { padding: 40px; text-align: center; color: var(--cr-gray-500); }
     .rank-note { margin-top: var(--space-xl); background: var(--cr-gray-50); border: 1px solid var(--cr-gray-200);
       border-radius: var(--radius-lg); padding: 20px 24px; }
@@ -148,7 +156,17 @@
           <option value="M" data-i18n="rank_gender_m">ชาย</option>
           <option value="F" data-i18n="rank_gender_f">หญิง</option>
         </select>
+        <select class="rank-select" id="sourceSel">
+          <option value="all" data-i18n="rank_src_all">ทุกที่มา</option>
+          <option value="cr" data-i18n="rank_src_cr">เฉพาะงาน Checkrace</option>
+          <option value="ext" data-i18n="rank_src_ext">เฉพาะงานนอก</option>
+        </select>
         <input class="rank-search" id="searchInp" type="search" data-i18n-placeholder="rank_search_ph" placeholder="ค้นหาชื่อนักวิ่ง">
+      </div>
+
+      <div class="rank-legend">
+        <span><span class="lg-dot cr"></span><span data-i18n="rank_legend_cr">งานที่จับเวลาโดย Checkrace</span></span>
+        <span><span class="lg-dot ext"></span><span data-i18n="rank_legend_ext">งานนอก (ดึงจากผลสาธารณะ)</span> ↗</span>
       </div>
 
       <div class="rank-count" id="rankCount"></div>

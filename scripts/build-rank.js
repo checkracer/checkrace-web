@@ -211,7 +211,8 @@ function buildLeaderboard(rows, RACE, META, topN) {
         sec: Math.round(sec),
         time: RACE.secToTime(sec),
         event: r.event || '',
-        year: (meta && meta.year) || r._year || null
+        year: (meta && meta.year) || r._year || null,
+        src: r._source ? 'ext' : 'cr'   // cr = Checkrace timing, ext = external (RaceResult etc.)
       });
     }
   }
@@ -235,7 +236,8 @@ function buildLeaderboard(rows, RACE, META, topN) {
     summary[d] = {
       runners: all.length, thai: tha.length,
       male: all.filter((e) => e.gender === 'M').length,
-      female: all.filter((e) => e.gender === 'F').length
+      female: all.filter((e) => e.gender === 'F').length,
+      external: all.filter((e) => e.src === 'ext').length
     };
   }
   return { byDistance, summary };

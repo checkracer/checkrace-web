@@ -9,6 +9,7 @@ const RANK = {
   dist: '42K',
   scope: 'tha',     // 'tha' | 'all'
   gender: 'all',    // 'all' | 'M' | 'F'
+  source: 'all',    // 'all' | 'cr' (Checkrace) | 'ext' (external)
   query: '',
   MAX_ROWS: 300     // rows rendered into the DOM
 };
@@ -47,8 +48,12 @@ function rankedList() {
   // each scope has its own gender-split list so women aren't truncated by a
   // male-dominated overall list: tha / tha_M / tha_F / all / all_M / all_F
   const key = RANK.scope + (RANK.gender === 'all' ? '' : '_' + RANK.gender);
-  const list = bucket[key] || bucket[RANK.scope] || [];
-  // arrays are pre-sorted by time → rank = position in this view
+  let list = bucket[key] || bucket[RANK.scope] || [];
+  // source filter: Checkrace-timed vs external (non-Checkrace) events
+  if (RANK.source === 'cr' || RANK.source === 'ext') {
+    list = list.filter(e => (e.src || 'cr') === RANK.source);
+  }
+  // arrays are pre-sorted by time → rank = position in this (filtered) view
   return list.map((e, i) => Object.assign({ rank: i + 1 }, e));
 }
 
@@ -76,8 +81,9 @@ function render() {
     const flag = flagEmoji(e.nat);
     const sex = (e.gender === 'M' || e.gender === 'F')
       ? '<span class="rn-sex ' + e.gender + '">' + e.gender + '</span>' : '';
+    const evCls = e.src === 'ext' ? 'rn-ev ext' : 'rn-ev';
     const ev = e.event
-      ? '<span class="rn-ev">' + e.event + '</span>' + (e.year ? '<span class="rn-yr">' + e.year + '</span>' : '')
+      ? '<span class="' + evCls + '">' + e.event + '</span>' + (e.year ? '<span class="rn-yr">' + e.year + '</span>' : '')
       : '<span class="rn-yr">—</span>';
     return '<tr>'
       + '<td class="rk' + rkCls + '">' + (medal ? '<span class="rk-medal">' + medal + '</span> ' : '') + e.rank + '</td>'
@@ -116,6 +122,11 @@ function initControls() {
   // gender
   document.getElementById('genderSel').addEventListener('change', e => {
     RANK.gender = e.target.value;
+    render();
+  });
+  // source (Checkrace / external)
+  document.getElementById('sourceSel').addEventListener('change', e => {
+    RANK.source = e.target.value;
     render();
   });
   // search (debounced)
