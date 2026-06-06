@@ -9,6 +9,18 @@
     "thaiCodes": ["THA", "TH"]
   },
   "checkraceExclude": [],
+  "_natOverrides_note": "Foreigners mis-keyed as THA in EVERY record (cross-event vote can't catch). Confirmed by name (Kenyan/Ethiopian/Japanese elites topping the Thai board). Key = full name (case/space-insensitive) → IOC code.",
+  "natOverrides": {
+    "Cosmas Cheryut": "KEN",
+    "Onesmus Muindi": "KEN",
+    "Nelson Kiptoo": "KEN",
+    "Samson Tenai": "KEN",
+    "Dennis Isika": "KEN",
+    "Noah Kutung Chepsergon": "KEN",
+    "David Chepkwony": "KEN",
+    "Kindu Sewmehon Tiruneh": "ETH",
+    "Daisuke Yamauchi": "JPN"
+  },
   "externalEvents": [
     { "code": "BS21-25", "name": "Bangsaen21 Half Marathon 2025", "timing": "raceresult", "raceResultId": "376487", "year": 2025, "province": "ชลบุรี", "distances": ["21K"], "included": true },
     { "code": "BS21-24", "name": "Bangsaen21 Half Marathon 2024", "timing": "raceresult", "raceResultId": "320765", "year": 2024, "province": "ชลบุรี", "distances": ["21K"], "included": true },

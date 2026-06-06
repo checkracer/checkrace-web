@@ -62,8 +62,42 @@ function httpGet(url, redirects) {
 }
 const getJSON = (url) => httpGet(url).then(JSON.parse);
 
-const THAI = new Set(['THA', 'TH']);
-const isThai = (nat) => THAI.has(String(nat || '').toUpperCase());
+// Merge IOC/ISO duplicates so nationality votes combine (canonical = IOC-ish)
+const NAT_ALIAS = { TH: 'THA', PHL: 'PHI', MYS: 'MAS', KHM: 'CAM', ZAF: 'RSA', IDN: 'INA',
+  IRN: 'IRI', CHE: 'SUI', DEU: 'GER', NLD: 'NED', VNM: 'VIE', SGP: 'SIN', KOR: 'KOR' };
+const canonNat = (n) => { const u = String(n || '').toUpperCase(); return NAT_ALIAS[u] || u; };
+const isThai = (nat) => canonNat(nat) === 'THA';
+const fullNameOf = (r) => ((r.first_name || '') + ' ' + (r.last_name || '')).replace(/\s+/g, ' ').trim();
+
+// Fix mis-keyed nationality. A runner is identified by name; their country is
+// the majority vote across all their records (cross-event), unless overridden
+// manually in rank-events.json "natOverrides" (for foreigners mis-keyed in
+// EVERY record, which a vote can't catch). Returns # of records changed.
+function reconcileNationality(rows, overrides) {
+  overrides = overrides || {};
+  const ovr = {};
+  Object.keys(overrides).forEach((k) => { ovr[normName(k)] = canonNat(overrides[k]); });
+
+  const tally = {};
+  for (const r of rows) {
+    const k = normName(fullNameOf(r)); if (!k) continue;
+    const c = canonNat(r.nationality); if (!c || c === '?') continue;
+    (tally[k] = tally[k] || {})[c] = (tally[k][c] || 0) + 1;
+  }
+  const majority = {};
+  for (const k in tally) {
+    const s = Object.entries(tally[k]).sort((a, b) => b[1] - a[1]);
+    if (s.length === 1 || s[0][1] > s[1][1]) majority[k] = s[0][0];  // skip ties
+  }
+  let changed = 0;
+  for (const r of rows) {
+    const k = normName(fullNameOf(r));
+    const target = ovr[k] || majority[k];
+    if (target && canonNat(r.nationality) !== target) { r.nationality = target; changed++; }
+    else if (target) r.nationality = target;  // normalise alias even if unchanged
+  }
+  return changed;
+}
 
 // Canonical 10-year age brackets. Source events label age groups
 // inconsistently (and never give birth year), so map each label to a
@@ -328,8 +362,13 @@ function buildLeaderboard(rows, RACE, META, topN) {
     }
   }
 
+  // Fix mis-keyed nationality (cross-event majority + manual overrides)
+  const allRows = baseRows.concat(extRows);
+  const natChanged = reconcileNationality(allRows, reg.natOverrides);
+  console.log('  nationality reconciled:', natChanged, 'record(s) recoded');
+
   const topN = (reg.criteria && reg.criteria.topN) || DEFAULT_TOP_N;
-  const { byDistance, byAge, summary } = buildLeaderboard(baseRows.concat(extRows), RACE, META, topN);
+  const { byDistance, byAge, summary } = buildLeaderboard(allRows, RACE, META, topN);
 
   const out = {
     generated: new Date().toISOString().slice(0, 10),
