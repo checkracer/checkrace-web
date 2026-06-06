@@ -119,8 +119,28 @@ function ageBracket(category) {
   return '70+';
 }
 const normName = (s) => String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
-const titleCase = (s) => String(s || '').trim().replace(/\s+/g, ' ')
+const titleCase = (s) => String(s || '').toLowerCase().trim().replace(/\s+/g, ' ')
   .replace(/\b\w/g, (c) => c.toUpperCase());
+
+// Back-fill missing gender from the same runner's other records, so one
+// person isn't split into a "no-gender" entry + an "M" entry. ONLY fills when
+// that exact name has a single known gender — never merges different names
+// (e.g. the twins Nattawut Innum / Nattawat Innum stay separate). Returns # filled.
+function reconcileGender(rows) {
+  const known = {};
+  for (const r of rows) {
+    const g = String(r.gender || '').toUpperCase().charAt(0);
+    if (g === 'M' || g === 'F') (known[normName(fullNameOf(r))] = known[normName(fullNameOf(r))] || new Set()).add(g);
+  }
+  let filled = 0;
+  for (const r of rows) {
+    const g = String(r.gender || '').toUpperCase().charAt(0);
+    if (g === 'M' || g === 'F') continue;
+    const set = known[normName(fullNameOf(r))];
+    if (set && set.size === 1) { r.gender = [...set][0]; filled++; }
+  }
+  return filled;
+}
 
 // ---- RaceResult public results → normalized rows (same schema as Checkrace) ----
 // Handles the format variety across organizers/years:
@@ -366,6 +386,9 @@ function buildLeaderboard(rows, RACE, META, topN) {
   const allRows = baseRows.concat(extRows);
   const natChanged = reconcileNationality(allRows, reg.natOverrides);
   console.log('  nationality reconciled:', natChanged, 'record(s) recoded');
+  // Back-fill missing gender so one person isn't split across entries
+  const genFilled = reconcileGender(allRows);
+  console.log('  gender back-filled:', genFilled, 'record(s)');
 
   const topN = (reg.criteria && reg.criteria.topN) || DEFAULT_TOP_N;
   const { byDistance, byAge, summary } = buildLeaderboard(allRows, RACE, META, topN);
