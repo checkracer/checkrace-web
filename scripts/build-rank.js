@@ -155,10 +155,11 @@ function flagToCode(v) {
   const m = String(v || '').match(/\/([A-Za-z]{2})(?:[_-][a-z]+)?\.(?:gif|svg|png)/i);
   return m ? m[1].toUpperCase() : '';
 }
-// Non-finisher markers that can appear in a RaceResult status/rank cell.
-// (Not "Incomplete" — that can flag a real finisher who missed a split mat;
-//  their bogus 0:00:00 chip is rejected by the time checks anyway.)
-const NONFINISH = new Set(['DNF', 'DSQ', 'DNS', 'DQ']);
+// Non-finisher markers in a RaceResult status/rank cell — matched at the start
+// with a word boundary so "DNF", "DQ-Wave", "DSQ" are caught but a name like
+// "Dquan" is not. (Not "Incomplete" — that can be a real finisher who missed a
+// split mat; their bogus 0:00:00 time is rejected by the time checks anyway.)
+const NONFINISH_RE = /^(DNF|DSQ|DNS|DQ)([ \-_]|$)/i;
 function distFromName(n) {
   const s = String(n).toLowerCase();
   if (/half|ฮาล์ฟ/.test(s)) return 21.1;                 // "Half Marathon" → 21.1 (check before marathon)
@@ -222,23 +223,32 @@ async function fetchRaceResult(ev, base, defaultList) {
   for (const { p, distHint } of payloads) {
     const F = (p && p.DataFields) || [];
     if (!F.length || !p.data) continue;
+    // A real column has a plain name; skip RaceResult formula columns (which
+    // contain [...]/(...) and can include words like "Gun" inside the formula).
+    const isField = (f) => { const s = String(f || ''); return s.length > 0 && !/[\[\]()]/.test(s); };
     const idxLike = (...subs) => {
-      for (const s of subs) { const i = F.findIndex((f) => String(f).toUpperCase().includes(s.toUpperCase())); if (i >= 0) return i; }
+      for (const s of subs) { const i = F.findIndex((f) => isField(f) && String(f).toUpperCase().includes(s.toUpperCase())); if (i >= 0) return i; }
+      return -1;
+    };
+    const idxExact = (...names) => {
+      for (const n of names) { const i = F.findIndex((f) => isField(f) && String(f).toUpperCase() === n.toUpperCase()); if (i >= 0) return i; }
       return -1;
     };
     const iName = idxLike('DisplayName', 'Name', 'Lastname');
     const iIoc = idxLike('IOCNAME', 'NATION.NAME');
-    const iFlag = idxLike('NATION.FLAG', 'NATION', 'CustomFlag', 'FLAG');
-    const iChip = idxLike('NetTime', 'Finish.CHIP', 'CHIP', 'ChipTime');
-    const iGun = idxLike('TimeOrStatus', 'Finish.GUN', 'GUN', 'TotalTime', 'GunTime');
-    const iSex = idxLike('SexMF', 'MaleFemale', 'Sex', 'Gender');
+    const iFlag = idxLike('NATION.FLAG', 'CustomFlag', 'FLAG', 'NATION');
+    // chip/net then gun. primeworks/timit lists use generic TIME2 (net) / TIME1
+    // (gun) columns — exact-match those only when no named time field exists.
+    let iChip = idxLike('NetTime', 'Finish.CHIP', 'ChipTime'); if (iChip < 0) iChip = idxExact('TIME2');
+    let iGun = idxLike('Finish.GUN', 'GunTime', 'TimeOrStatus'); if (iGun < 0) iGun = idxExact('TIME1');
+    const iSex = idxLike('SexMF', 'MaleFemale', 'Sex');
     const iAge = idxLike('AGEGROUP', 'AgeGroup', 'Category');
     const emit = (arr, ctx) => {
       for (const row of arr) {
         if (!Array.isArray(row)) continue;
-        // skip non-finishers — DNF/DSQ/Incomplete can carry a partial chip time
+        // skip non-finishers — DNF/DSQ/DQ-Wave can carry a partial time
         let nonfinish = false;
-        for (const cell of row) { if (NONFINISH.has(String(cell).trim().toUpperCase())) { nonfinish = true; break; } }
+        for (const cell of row) { if (NONFINISH_RE.test(String(cell).trim())) { nonfinish = true; break; } }
         if (nonfinish) continue;
         const chip = iChip >= 0 ? row[iChip] : '';
         let nat = iIoc >= 0 ? row[iIoc] : '';
@@ -268,6 +278,41 @@ async function fetchRaceResult(ev, base, defaultList) {
     walk(p.data, { dist: distHint || 0, gender: '' });
   }
   return rows;
+}
+
+// Per-event data-quality check — surfaces format/parsing problems the moment
+// a new external event is added (nationality field not recognised, distance
+// not mapped, times faster than a world record = mislabelled distance, etc.).
+const WR_FLOOR = { '42.195': 7000, '21.1': 3300, '10': 1500, '5': 720 }; // below any real WR
+function eventHealth(rows, RACE) {
+  const buckets = {}; const fastest = {};
+  let withNat = 0, unmapped = 0;
+  for (const r of rows) {
+    if (r.nationality) withNat++;
+    const nd = RACE.normDist(parseFloat(r.distance) || 0);
+    const label = BUCKETS[String(nd)];
+    if (!label) { unmapped++; continue; }
+    buckets[label] = (buckets[label] || 0) + 1;
+    r.distance = nd;
+    const sec = RACE.bestTime(r);
+    if (sec > 0 && sec < 999000 && (!fastest[label] || sec < fastest[label])) fastest[label] = sec;
+  }
+  const n = rows.length;
+  const natPct = n ? Math.round((100 * withNat) / n) : 0;
+  const warnings = [];
+  if (!n) warnings.push('0 finishers parsed — list/format problem');
+  if (n && natPct === 0) warnings.push('no nationality parsed (flag/IOC field not recognised)');
+  if (natPct > 0 && natPct < 60) warnings.push('low nationality coverage (' + natPct + '%)');
+  if (unmapped > Math.max(20, n * 0.1)) warnings.push(unmapped + ' rows with unmapped distance (contest name?)');
+  for (const nd in WR_FLOOR) {
+    const label = BUCKETS[nd];
+    if (fastest[label] != null && fastest[label] < WR_FLOOR[nd]) {
+      warnings.push('impossibly fast ' + label + ' ' + RACE.secToTime(fastest[label]) + ' — distance mislabel / bad parse');
+    }
+  }
+  const distStr = Object.keys(buckets).map((l) => l + ':' + buckets[l]).join(' ') || '—';
+  const fastStr = Object.keys(fastest).map((l) => l + ' ' + RACE.secToTime(fastest[l])).join(', ') || '—';
+  return { line: n + ' finishers | dist ' + distStr + ' | nat ' + natPct + '% | fastest ' + fastStr, warnings };
 }
 
 // ---- Aggregate rows → best-time leaderboard per distance ----
@@ -384,9 +429,11 @@ function buildLeaderboard(rows, RACE, META, topN) {
     if (timing === 'raceresult' && ev.raceResultId) {
       try {
         const rows = await fetchRaceResult(ev, reg.raceResultBase, reg.raceResultList);
-        console.log(`  + RaceResult ${label}: ${rows.length} rows`);
+        const h = eventHealth(rows, RACE);
+        console.log(`  + RaceResult ${label}: ${h.line}`);
+        h.warnings.forEach((w) => console.log(`      ⚠️  ${label}: ${w}`));
         extRows = extRows.concat(rows);
-        extEvents.push({ code: ev.code, name: ev.name, timing, raceResultId: ev.raceResultId, rows: rows.length });
+        extEvents.push({ code: ev.code, name: ev.name, timing, raceResultId: ev.raceResultId, rows: rows.length, warnings: h.warnings });
       } catch (e) {
         console.warn(`  ! RaceResult ${label} failed: ${e.message}`);
       }
@@ -428,5 +475,20 @@ function buildLeaderboard(rows, RACE, META, topN) {
   for (const d of DIST_ORDER) {
     const t = byDistance[d].tha[0];
     if (t) console.log(`  ${d} fastest Thai: ${t.name} ${t.time} (${t.event} ${t.year || ''})`);
+  }
+
+  // Consolidated data-quality flags — easy to spot when adding new events
+  const flagged = extEvents.filter((e) => (e.warnings && e.warnings.length) || e.skipped);
+  console.log('\n===== DATA QUALITY =====');
+  if (!flagged.length) {
+    console.log('✓ no anomalies — all external events parsed cleanly');
+  } else {
+    console.log(flagged.length + ' external event(s) need a look:');
+    flagged.forEach((e) => {
+      const id = e.code || e.raceResultId;
+      if (e.skipped) console.log(`  ~ ${id}: timing "${e.timing}" not supported yet`);
+      else e.warnings.forEach((w) => console.log(`  ⚠️  ${id}: ${w}`));
+    });
+    console.log('Review with: node scripts/audit-rank.js  (and check the per-event lines above)');
   }
 })().catch((e) => { console.error('build-rank failed:', e); process.exit(1); });
