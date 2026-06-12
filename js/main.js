@@ -13,6 +13,7 @@
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
+  initBlogNav();
   initNavbar();
   initDropdowns();
   initScrollAnimations();
@@ -21,6 +22,22 @@ document.addEventListener('DOMContentLoaded', () => {
   initI18n();
   initTheme();
 });
+
+/* --- Inject a "บทความ" (Blog) link into the About dropdown on every page --- */
+function initBlogNav() {
+  const menu = document.querySelector('.nav-dropdown[data-page="about"] .nav-dropdown-menu');
+  if (!menu || menu.querySelector('a[href="blog.html"]')) return;
+  const LABELS = { th: 'บทความ', en: 'Blog', jp: 'ブログ', cn: '博客' };
+  const a = document.createElement('a');
+  a.href = 'blog.html';
+  const setLabel = () => { a.textContent = LABELS[localStorage.getItem('cr-lang') || 'th'] || LABELS.th; };
+  setLabel();
+  const portfolio = menu.querySelector('a[href="portfolio.html"]');
+  if (portfolio) portfolio.insertAdjacentElement('afterend', a);
+  else menu.appendChild(a);
+  document.querySelectorAll('.lang-switcher button').forEach((btn) =>
+    btn.addEventListener('click', () => setTimeout(setLabel, 0)));
+}
 
 /* --- Day / Night theme toggle (injected into the navbar) --- */
 function initTheme() {

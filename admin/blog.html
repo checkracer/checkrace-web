@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Admin — Checkrace</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background: var(--cr-gray-50); }
+    .admin { max-width: 1100px; margin: 0 auto; padding: var(--space-xl); }
+    .admin-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: var(--space-xl); }
+    .admin-grid { display: grid; grid-template-columns: 340px 1fr; gap: var(--space-xl); align-items: start; }
+    .panel { background: var(--cr-white); border: 1px solid var(--cr-gray-100); border-radius: var(--radius-lg); padding: var(--space-lg); }
+    .post-row { display: flex; justify-content: space-between; gap: 8px; padding: 10px 8px; border-radius: var(--radius-md); cursor: pointer; border: 1px solid transparent; }
+    .post-row:hover { background: var(--cr-gray-50); }
+    .post-row.active { border-color: var(--cr-red); background: rgba(229,57,53,0.05); }
+    .post-row small { color: var(--cr-gray-500); }
+    .pill { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: var(--radius-full); text-transform: uppercase; }
+    .pill.published { background: #DCFCE7; color: #166534; }
+    .pill.draft { background: var(--cr-gray-100); color: var(--cr-gray-700); }
+    label { display: block; font-size: 0.82rem; font-weight: 600; margin: 12px 0 4px; color: var(--cr-gray-700); }
+    input, select, textarea { width: 100%; padding: 9px 12px; font-family: var(--font-primary); font-size: 0.92rem; border: 1px solid var(--cr-gray-300); border-radius: var(--radius-md); background: var(--cr-white); }
+    textarea { min-height: 240px; resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.85rem; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .actions { display: flex; gap: 10px; margin-top: var(--space-lg); flex-wrap: wrap; }
+    .preview { border: 1px dashed var(--cr-gray-300); border-radius: var(--radius-md); padding: 16px; margin-top: 8px; }
+    .muted { color: var(--cr-gray-500); font-size: 0.85rem; }
+    .check-inline { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
+    .check-inline input { width: auto; }
+  </style>
+</head>
+<body>
+  <div class="admin">
+    <div class="admin-top">
+      <div>
+        <a href="../index.html" class="navbar-logo"><img src="../assets/logo.svg" alt="Checkrace" class="brand-mark"></a>
+        <h2 style="margin-top:8px">Blog Admin</h2>
+        <p class="muted" id="who">—</p>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="newPost()">+ บทความใหม่</button>
+    </div>
+
+    <div class="admin-grid">
+      <div class="panel">
+        <strong>บทความทั้งหมด</strong>
+        <div id="list" style="margin-top:10px"></div>
+      </div>
+
+      <div class="panel">
+        <form id="form" onsubmit="return savePost(event)">
+          <label>หัวข้อ (Title)</label>
+          <input id="f_title" required oninput="autoSlug()">
+          <div class="row2">
+            <div><label>Slug (URL)</label><input id="f_slug" placeholder="auto จากหัวข้อ"></div>
+            <div><label>หมวดหมู่</label>
+              <select id="f_category">
+                <option value="news">ข่าวสาร</option>
+                <option value="training">ฝึกซ้อม</option>
+                <option value="event">รีวิวงาน</option>
+                <option value="nutrition">โภชนาการ</option>
+                <option value="gear">อุปกรณ์</option>
+                <option value="inspire">แรงบันดาลใจ</option>
+              </select>
+            </div>
+          </div>
+          <div class="row2">
+            <div><label>ผู้เขียน</label><input id="f_author" placeholder="ทีม Checkrace"></div>
+            <div><label>ภาษา</label><select id="f_language"><option value="th">TH</option><option value="en">EN</option></select></div>
+          </div>
+          <label>รูปปก (Cover image URL)</label>
+          <input id="f_cover" placeholder="https://...">
+          <label>คำอธิบายปก (alt)</label>
+          <input id="f_cover_alt">
+          <label>เกริ่นนำ (Excerpt)</label>
+          <input id="f_excerpt">
+          <label>Tags (คั่นด้วย ,)</label>
+          <input id="f_tags" placeholder="running, training">
+          <label>เนื้อหา (HTML)</label>
+          <textarea id="f_body" oninput="syncPreview()" placeholder="&lt;p&gt;...&lt;/p&gt;"></textarea>
+          <label>ตัวอย่าง</label>
+          <div class="preview article-body" id="preview"></div>
+          <div class="check-inline"><input type="checkbox" id="f_featured"><label style="margin:0">บทความเด่น (Featured)</label></div>
+          <label>สถานะ</label>
+          <select id="f_status"><option value="draft">ฉบับร่าง (Draft)</option><option value="published">เผยแพร่ (Published)</option></select>
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">บันทึก</button>
+            <a id="viewLink" class="btn btn-outline" target="_blank" style="display:none">เปิดดู →</a>
+            <button type="button" class="btn btn-outline" style="color:var(--cr-red);border-color:var(--cr-red)" onclick="deletePost()">ลบ</button>
+            <span class="muted" id="status"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  const $ = (id) => document.getElementById(id);
+  let editingSlug = null;
+
+  function autoSlug() {
+    if (editingSlug) return;
+    $('f_slug').value = $('f_title').value.toLowerCase().trim()
+      .replace(/[^\w\u0E00-\u0E7F]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+  }
+  function syncPreview() { $('preview').innerHTML = $('f_body').value; }
+
+  async function load() {
+    const r = await fetch('/api/admin/blog');
+    if (r.status === 401 || r.status === 403) { $('list').innerHTML = '<p class="muted">ไม่ได้รับสิทธิ์ — ต้องเข้าผ่าน Cloudflare Access</p>'; return; }
+    const d = await r.json();
+    const posts = d.posts || [];
+    $('list').innerHTML = posts.length ? posts.map((p) =>
+      '<div class="post-row' + (p.slug === editingSlug ? ' active' : '') + '" onclick="edit(\'' + p.slug + '\')">'
+      + '<div><div>' + escapeHtml(p.title) + '</div><small>' + (p.category || '') + ' · ' + (p.views || 0) + ' views</small></div>'
+      + '<span class="pill ' + p.status + '">' + p.status + '</span></div>').join('')
+      : '<p class="muted">ยังไม่มีบทความ</p>';
+    window._posts = posts;
+  }
+
+  function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+  function newPost() {
+    editingSlug = null;
+    $('form').reset();
+    $('f_status').value = 'draft';
+    $('viewLink').style.display = 'none';
+    $('status').textContent = '';
+    syncPreview(); load();
+    $('f_title').focus();
+  }
+
+  function edit(slug) {
+    const p = (window._posts || []).find((x) => x.slug === slug);
+    if (!p) return;
+    editingSlug = slug;
+    $('f_title').value = p.title || '';
+    $('f_slug').value = p.slug || '';
+    $('f_category').value = p.category || 'news';
+    $('f_author').value = p.author || '';
+    $('f_language').value = p.language || 'th';
+    $('f_cover').value = p.cover_image || '';
+    $('f_cover_alt').value = p.cover_alt || '';
+    $('f_excerpt').value = p.excerpt || '';
+    $('f_tags').value = Array.isArray(p.tags) ? p.tags.join(', ') : (p.tags || '');
+    $('f_body').value = p.body || '';
+    $('f_featured').checked = !!p.featured;
+    $('f_status').value = p.status || 'draft';
+    const vl = $('viewLink'); vl.href = '/article.html?slug=' + encodeURIComponent(p.slug); vl.style.display = '';
+    $('status').textContent = '';
+    syncPreview(); load();
+  }
+
+  async function savePost(e) {
+    e.preventDefault();
+    const payload = {
+      slug: $('f_slug').value.trim() || undefined,
+      title: $('f_title').value.trim(),
+      category: $('f_category').value,
+      author: $('f_author').value.trim() || undefined,
+      language: $('f_language').value,
+      cover_image: $('f_cover').value.trim() || undefined,
+      cover_alt: $('f_cover_alt').value.trim() || undefined,
+      excerpt: $('f_excerpt').value.trim() || undefined,
+      tags: $('f_tags').value.trim() || undefined,
+      body: $('f_body').value,
+      featured: $('f_featured').checked,
+      status: $('f_status').value,
+    };
+    $('status').textContent = 'กำลังบันทึก…';
+    const r = await fetch('/api/admin/blog', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+    const d = await r.json();
+    if (d.ok) { editingSlug = d.slug; $('status').textContent = '✓ บันทึกแล้ว'; const vl = $('viewLink'); vl.href = '/article.html?slug=' + encodeURIComponent(d.slug); vl.style.display = ''; load(); }
+    else { $('status').textContent = '✗ ' + (d.error || 'error'); }
+    return false;
+  }
+
+  async function deletePost() {
+    if (!editingSlug || !confirm('ลบบทความนี้?')) return;
+    await fetch('/api/admin/blog?slug=' + encodeURIComponent(editingSlug), { method: 'DELETE' });
+    newPost();
+  }
+
+  // show signed-in Access email if available (best-effort)
+  fetch('/cdn-cgi/access/get-identity').then(r => r.ok ? r.json() : null).then(j => { if (j && j.email) $('who').textContent = j.email; }).catch(() => {});
+  load();
+  </script>
+</body>
+</html>
