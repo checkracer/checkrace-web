@@ -22,7 +22,8 @@
     .pill.draft { background: var(--cr-gray-100); color: var(--cr-gray-700); }
     label { display: block; font-size: 0.82rem; font-weight: 600; margin: 12px 0 4px; color: var(--cr-gray-700); }
     input, select, textarea { width: 100%; padding: 9px 12px; font-family: var(--font-primary); font-size: 0.92rem; border: 1px solid var(--cr-gray-300); border-radius: var(--radius-md); background: var(--cr-white); }
-    textarea { min-height: 240px; resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.85rem; }
+    textarea { min-height: 240px; resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.85rem; transition: border-color .15s, box-shadow .15s; }
+    textarea.drag-over { border-color: var(--cr-red); box-shadow: 0 0 0 3px rgba(229,57,53,0.18); background: rgba(229,57,53,0.04); }
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .actions { display: flex; gap: 10px; margin-top: var(--space-lg); flex-wrap: wrap; }
     .preview { border: 1px dashed var(--cr-gray-300); border-radius: var(--radius-md); padding: 16px; margin-top: 8px; }
@@ -83,6 +84,7 @@
           <input id="f_tags" placeholder="running, training">
           <label>เนื้อหา (HTML)
             <button type="button" class="btn btn-outline btn-sm" style="padding:2px 10px;margin-left:6px" onclick="document.getElementById('bodyImg').click()">⬆ แทรกรูป</button>
+            <span class="muted" style="font-weight:400">— หรือ ลากรูปมาวาง / วาง (paste) ในช่องด้านล่าง</span>
             <span class="muted" id="uploadMsg"></span>
           </label>
           <input type="file" id="bodyImg" accept="image/*" hidden onchange="handleBodyImage(this)">
@@ -132,15 +134,39 @@
     catch (e) { $('status').textContent = '✗ ' + e.message; }
     input.value = '';
   }
+  async function uploadAndInsert(files) {
+    const imgs = [...files].filter((f) => f && f.type && f.type.startsWith('image/'));
+    if (!imgs.length) { $('uploadMsg').textContent = '✗ ไม่ใช่ไฟล์รูป'; return; }
+    let ok = 0;
+    for (const f of imgs) {
+      $('uploadMsg').textContent = 'กำลังอัปโหลด ' + (f.name || 'image') + '… (' + (ok + 1) + '/' + imgs.length + ')';
+      try {
+        const url = await uploadFile(f);
+        insertAtCursor($('f_body'), '<img src="' + url + '" alt="">');
+        syncPreview(); ok++;
+      } catch (e) { $('uploadMsg').textContent = '✗ ' + e.message; }
+    }
+    if (ok) $('uploadMsg').textContent = '✓ แทรกรูปแล้ว ' + ok + ' รูป';
+  }
   async function handleBodyImage(input) {
-    const f = input.files[0]; if (!f) return;
-    $('uploadMsg').textContent = 'กำลังอัปโหลด…';
-    try {
-      const url = await uploadFile(f);
-      insertAtCursor($('f_body'), '<img src="' + url + '" alt="">');
-      syncPreview(); $('uploadMsg').textContent = '✓ แทรกรูปแล้ว';
-    } catch (e) { $('uploadMsg').textContent = '✗ ' + e.message; }
+    if (input.files && input.files.length) await uploadAndInsert(input.files);
     input.value = '';
+  }
+  // Drag & drop + paste images straight into the content box
+  function initDropzone() {
+    const ta = $('f_body');
+    if (!ta) return;
+    ['dragenter', 'dragover'].forEach((ev) => ta.addEventListener(ev, (e) => { e.preventDefault(); ta.classList.add('drag-over'); }));
+    ['dragleave', 'dragend', 'drop'].forEach((ev) => ta.addEventListener(ev, () => ta.classList.remove('drag-over')));
+    ta.addEventListener('drop', (e) => {
+      const files = e.dataTransfer && e.dataTransfer.files;
+      if (files && files.length) { e.preventDefault(); uploadAndInsert(files); }
+    });
+    ta.addEventListener('paste', (e) => {
+      const items = (e.clipboardData && e.clipboardData.items) || [];
+      const imgs = [...items].filter((i) => i.type && i.type.startsWith('image/')).map((i) => i.getAsFile()).filter(Boolean);
+      if (imgs.length) { e.preventDefault(); uploadAndInsert(imgs); }
+    });
   }
   function insertAtCursor(ta, text) {
     const s = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
@@ -229,6 +255,7 @@
   // show signed-in Access email if available (best-effort)
   fetch('/cdn-cgi/access/get-identity').then(r => r.ok ? r.json() : null).then(j => { if (j && j.email) $('who').textContent = j.email; }).catch(() => {});
   load();
+  initDropzone();
   </script>
 </body>
 </html>
