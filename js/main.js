@@ -1,7 +1,16 @@
 /* ============================================
    CHECKRACE — Main JavaScript
-   Navigation, Animations, Counter, FAQ
+   Navigation, Animations, Counter, FAQ, Theme
    ============================================ */
+
+/* Apply saved day/night theme ASAP (before paint) to avoid a flash */
+(function () {
+  try {
+    if (localStorage.getItem('cr-theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  } catch (e) {}
+})();
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavbar();
@@ -10,7 +19,37 @@ document.addEventListener('DOMContentLoaded', () => {
   initCounters();
   initFAQ();
   initI18n();
+  initTheme();
 });
+
+/* --- Day / Night theme toggle (injected into the navbar) --- */
+function initTheme() {
+  const navLinks = document.querySelector('.nav-links');
+  if (!navLinks || navLinks.querySelector('.theme-toggle')) return;
+
+  const btn = document.createElement('button');
+  btn.className = 'theme-toggle';
+  btn.setAttribute('aria-label', 'Toggle night / day mode');
+  btn.setAttribute('title', 'Night / Day mode');
+  btn.innerHTML =
+    '<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>' +
+    '<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+
+  btn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.documentElement.removeAttribute('data-theme');
+      try { localStorage.setItem('cr-theme', 'light'); } catch (e) {}
+    } else {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      try { localStorage.setItem('cr-theme', 'dark'); } catch (e) {}
+    }
+  });
+
+  const langSwitcher = navLinks.querySelector('.lang-switcher');
+  if (langSwitcher) navLinks.insertBefore(btn, langSwitcher);
+  else navLinks.appendChild(btn);
+}
 
 /* --- Dropdown menus (desktop hover + mobile click) --- */
 function initDropdowns() {

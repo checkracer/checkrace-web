@@ -1649,3 +1649,54 @@ p { margin-bottom: var(--space-md); }
   .stats-grid { grid-template-columns: 1fr; }
   .btn-lg { width: 100%; }
 }
+
+/* ============================================
+   DARK MODE (night mode) — [data-theme="dark"]
+   Brand red is preserved; the neutral palette flips.
+   NOTE: --cr-gray-900 is intentionally NOT flipped —
+   it is the dark surface for page-header / footer / bands,
+   so those stay dark in both themes (with white text).
+   ============================================ */
+[data-theme="dark"] {
+  --cr-white: #0F1115;     /* page background (body) */
+  --cr-black: #ECEEF1;     /* primary text & icons */
+  --cr-gray-50:  #15181D;  /* alternate section surface */
+  --cr-gray-100: #242A33;  /* borders, hover, light surfaces */
+  --cr-gray-300: #3A424D;  /* borders, input outline */
+  --cr-gray-500: #9AA0A8;  /* muted / secondary text */
+  --cr-gray-700: #C4C9D0;  /* body / secondary text */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.45);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.55);
+}
+[data-theme="dark"] body { color: var(--cr-gray-700); }
+
+/* Surfaces hardcoded white in light mode */
+[data-theme="dark"] .navbar { background: rgba(15,17,21,0.92); border-bottom-color: var(--cr-gray-100); }
+[data-theme="dark"] .nav-dropdown-menu { background: #1A1D24; border-color: var(--cr-gray-100); }
+[data-theme="dark"] .nav-links { background: #0F1115; }
+[data-theme="dark"] .card { background: #1A1D24; }
+[data-theme="dark"] .hero { background: linear-gradient(135deg, #0F1115 0%, #1c1416 50%, #0F1115 100%); }
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group select,
+[data-theme="dark"] .form-group textarea { background: #1A1D24; color: var(--cr-black); }
+[data-theme="dark"] .contact-info-card { background: #1A1D24; }
+[data-theme="dark"] .timeline-content { background: #1A1D24; }
+[data-theme="dark"] .kpi-card { background: #1A1D24; }
+
+/* Day / night toggle button (injected into the navbar by main.js) */
+.theme-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer; padding: 6px;
+  color: var(--cr-gray-700); border-radius: 8px;
+  transition: color var(--transition-fast);
+}
+.theme-toggle:hover { color: var(--cr-red); }
+.theme-toggle svg { width: 20px; height: 20px; }
+.theme-toggle .icon-sun { display: none; }
+[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+[data-theme="dark"] .theme-toggle .icon-sun { display: inline-flex; }
+
+/* Persistent-dark surfaces (footer) keep light text in dark mode */
+[data-theme="dark"] .footer { color: var(--cr-gray-500); }
+[data-theme="dark"] .social-links a { color: var(--cr-gray-500); }
