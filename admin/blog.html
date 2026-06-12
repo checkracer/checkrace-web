@@ -69,15 +69,23 @@
             <div><label>ผู้เขียน</label><input id="f_author" placeholder="ทีม Checkrace"></div>
             <div><label>ภาษา</label><select id="f_language"><option value="th">TH</option><option value="en">EN</option></select></div>
           </div>
-          <label>รูปปก (Cover image URL)</label>
-          <input id="f_cover" placeholder="https://...">
+          <label>รูปปก (Cover image URL)
+            <button type="button" class="btn btn-outline btn-sm" style="padding:2px 10px;margin-left:6px" onclick="document.getElementById('coverFile').click()">⬆ อัปโหลด</button>
+          </label>
+          <input id="f_cover" placeholder="https://... หรือ /img/...">
+          <input type="file" id="coverFile" accept="image/*" hidden onchange="handleCoverUpload(this)">
+          <div id="coverPreview" style="margin-top:8px"></div>
           <label>คำอธิบายปก (alt)</label>
           <input id="f_cover_alt">
           <label>เกริ่นนำ (Excerpt)</label>
           <input id="f_excerpt">
           <label>Tags (คั่นด้วย ,)</label>
           <input id="f_tags" placeholder="running, training">
-          <label>เนื้อหา (HTML)</label>
+          <label>เนื้อหา (HTML)
+            <button type="button" class="btn btn-outline btn-sm" style="padding:2px 10px;margin-left:6px" onclick="document.getElementById('bodyImg').click()">⬆ แทรกรูป</button>
+            <span class="muted" id="uploadMsg"></span>
+          </label>
+          <input type="file" id="bodyImg" accept="image/*" hidden onchange="handleBodyImage(this)">
           <textarea id="f_body" oninput="syncPreview()" placeholder="&lt;p&gt;...&lt;/p&gt;"></textarea>
           <label>ตัวอย่าง</label>
           <div class="preview article-body" id="preview"></div>
@@ -105,6 +113,42 @@
       .replace(/[^\w\u0E00-\u0E7F]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
   }
   function syncPreview() { $('preview').innerHTML = $('f_body').value; }
+  function renderCoverPreview() {
+    const url = $('f_cover').value.trim();
+    $('coverPreview').innerHTML = url ? '<img src="' + escapeHtml(url) + '" alt="" style="max-height:120px;border-radius:8px;border:1px solid var(--cr-gray-100)">' : '';
+  }
+
+  async function uploadFile(file) {
+    const fd = new FormData(); fd.append('file', file);
+    const r = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.url) throw new Error(d.error || ('upload failed (' + r.status + ')'));
+    return d.url;
+  }
+  async function handleCoverUpload(input) {
+    const f = input.files[0]; if (!f) return;
+    $('status').textContent = 'กำลังอัปโหลดรูปปก…';
+    try { $('f_cover').value = await uploadFile(f); renderCoverPreview(); $('status').textContent = '✓ อัปโหลดรูปปกแล้ว'; }
+    catch (e) { $('status').textContent = '✗ ' + e.message; }
+    input.value = '';
+  }
+  async function handleBodyImage(input) {
+    const f = input.files[0]; if (!f) return;
+    $('uploadMsg').textContent = 'กำลังอัปโหลด…';
+    try {
+      const url = await uploadFile(f);
+      insertAtCursor($('f_body'), '<img src="' + url + '" alt="">');
+      syncPreview(); $('uploadMsg').textContent = '✓ แทรกรูปแล้ว';
+    } catch (e) { $('uploadMsg').textContent = '✗ ' + e.message; }
+    input.value = '';
+  }
+  function insertAtCursor(ta, text) {
+    const s = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
+    const e = ta.selectionEnd != null ? ta.selectionEnd : ta.value.length;
+    ta.value = ta.value.slice(0, s) + text + ta.value.slice(e);
+    ta.selectionStart = ta.selectionEnd = s + text.length;
+    ta.focus();
+  }
 
   async function load() {
     const r = await fetch('/api/admin/blog');
@@ -127,7 +171,7 @@
     $('f_status').value = 'draft';
     $('viewLink').style.display = 'none';
     $('status').textContent = '';
-    syncPreview(); load();
+    syncPreview(); renderCoverPreview(); load();
     $('f_title').focus();
   }
 
@@ -149,7 +193,7 @@
     $('f_status').value = p.status || 'draft';
     const vl = $('viewLink'); vl.href = '/article.html?slug=' + encodeURIComponent(p.slug); vl.style.display = '';
     $('status').textContent = '';
-    syncPreview(); load();
+    syncPreview(); renderCoverPreview(); load();
   }
 
   async function savePost(e) {

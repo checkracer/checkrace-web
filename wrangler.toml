@@ -8,3 +8,7 @@ pages_build_output_dir = "."
 binding = "DB"
 database_name = "checkrace-db"
 database_id = "5baf870a-0ddf-4c09-9a05-a4b1d3c08197"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "checkrace-media"
