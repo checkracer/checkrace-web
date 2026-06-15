@@ -80,9 +80,13 @@
   function monthKey(ev) { return ymd(ev.date).slice(0, 7); } // YYYY-MM
 
   function buildFilters() {
-    const months = [...new Set(ALL.map(monthKey).filter((m) => /^\d{4}-\d{2}$/.test(m)))].sort();
     const cur = bkkToday().slice(0, 7);
+    const curYear = +cur.slice(0, 4);
+    // Hide months that have already passed — only current + future months in the slider.
+    const months = [...new Set(ALL.map(monthKey).filter((m) => /^\d{4}-\d{2}$/.test(m)))]
+      .filter((m) => m >= cur).sort();
     if (state.month === 'all' && months.includes(cur)) state.month = cur;
+    if (state.month !== 'all' && state.month < cur) state.month = months.includes(cur) ? cur : 'all';
     const counts = {};
     ALL.forEach((e) => { const k = monthKey(e); counts[k] = (counts[k] || 0) + 1; });
     const tab = (val, m, c, active) =>
@@ -91,7 +95,9 @@
     mWrap.innerHTML = tab('all', 'ทั้งหมด', ALL.length, state.month === 'all') +
       months.map((m) => {
         const [y, mo] = m.split('-');
-        return tab(m, `${THAI_MONTHS[+mo - 1]} ${(+y + 543).toString().slice(2)}`, counts[m] || 0, state.month === m);
+        // Drop the year suffix for the current year (e.g. just "มิ.ย."); show 2-digit BE year for other years.
+        const label = THAI_MONTHS[+mo - 1] + (+y === curYear ? '' : ' ' + ((+y + 543) % 100));
+        return tab(m, label, counts[m] || 0, state.month === m);
       }).join('');
     const wWrap = document.getElementById('calWeeks');
     wWrap.style.display = state.month === 'all' ? 'none' : '';
