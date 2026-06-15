@@ -43,7 +43,7 @@
   }
 
   let ALL = [];
-  const state = { month: 'all', week: 'all', type: '' };
+  const state = { month: 'all', week: 'all', type: '', q: '' };
 
   function card(ev, isPast) {
     const cat = RACE_CATEGORIES[ev.race_category];
@@ -83,11 +83,15 @@
     const months = [...new Set(ALL.map(monthKey).filter((m) => /^\d{4}-\d{2}$/.test(m)))].sort();
     const cur = bkkToday().slice(0, 7);
     if (state.month === 'all' && months.includes(cur)) state.month = cur;
+    const counts = {};
+    ALL.forEach((e) => { const k = monthKey(e); counts[k] = (counts[k] || 0) + 1; });
+    const tab = (val, m, c, active) =>
+      `<button data-month="${val}"${active ? ' class="active"' : ''}><span class="m">${m}</span><span class="c">${c} งาน</span></button>`;
     const mWrap = document.getElementById('calMonths');
-    mWrap.innerHTML = `<button data-month="all"${state.month === 'all' ? ' class="active"' : ''}>ทุกเดือน</button>` +
+    mWrap.innerHTML = tab('all', 'ทั้งหมด', ALL.length, state.month === 'all') +
       months.map((m) => {
         const [y, mo] = m.split('-');
-        return `<button data-month="${m}"${state.month === m ? ' class="active"' : ''}>${THAI_MONTHS[+mo - 1]} ${(+y + 543).toString().slice(2)}</button>`;
+        return tab(m, `${THAI_MONTHS[+mo - 1]} ${(+y + 543).toString().slice(2)}`, counts[m] || 0, state.month === m);
       }).join('');
     const wWrap = document.getElementById('calWeeks');
     wWrap.style.display = state.month === 'all' ? 'none' : '';
@@ -106,7 +110,8 @@
     const listEl = document.querySelector(render.sel), stateEl = document.querySelector(render.state);
     let rows = ALL.slice();
     if (state.type) rows = rows.filter((e) => (e.type || 'Road') === state.type);
-    if (state.month !== 'all') rows = rows.filter((e) => monthKey(e) === state.month && inWeek(e, state.week));
+    if (state.q) rows = rows.filter((e) => (e.name || '').toLowerCase().includes(state.q) || (e.province || '').toLowerCase().includes(state.q) || (e.venue || '').toLowerCase().includes(state.q));
+    if (state.month !== 'all' && !state.q) rows = rows.filter((e) => monthKey(e) === state.month && inWeek(e, state.week));
     const today = bkkToday();
     const up = rows.filter((e) => ymd(e.date) >= today).sort((a, b) => ymd(a.date) < ymd(b.date) ? -1 : 1);
     const past = rows.filter((e) => ymd(e.date) < today).sort((a, b) => ymd(a.date) > ymd(b.date) ? -1 : 1);
@@ -115,7 +120,7 @@
     stateEl.style.display = 'none';
 
     let html = '';
-    if (state.month === 'all') {
+    if (state.month === 'all' || state.q) {
       const byM = {};
       up.forEach((e) => { (byM[monthKey(e)] = byM[monthKey(e)] || []).push(e); });
       Object.keys(byM).sort().forEach((mk) => {
@@ -133,6 +138,8 @@
     document.getElementById('calMonths').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; state.month = b.dataset.month; state.week = 'all'; buildFilters(); render(); });
     document.getElementById('calWeeks').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; state.week = b.dataset.week; buildFilters(); render(); });
     document.getElementById('calTypes').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; state.type = b.dataset.type; document.querySelectorAll('#calTypes button').forEach((x) => x.classList.toggle('active', x === b)); render(); });
+    const search = document.getElementById('calSearch');
+    if (search) search.addEventListener('input', () => { state.q = search.value.trim().toLowerCase(); render(); });
   }
 
   window.renderCalendar = async function (listSel, stateSel) {
