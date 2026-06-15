@@ -41,7 +41,7 @@
     .ev-card:hover { box-shadow:0 8px 24px rgba(0,0,0,.07); border-color:var(--cr-gray-300); }
     .ev-card.past { opacity:.6; }
     .ev-thumb { width:78px; height:78px; border-radius:var(--radius-md); object-fit:cover; background:var(--cr-gray-100); flex-shrink:0; }
-    .ev-thumb.ph { display:grid; place-items:center; color:var(--cr-gray-300); font-size:1.6rem; }
+    .ev-thumb.ph { display:grid; place-items:center; color:var(--cr-gray-300); }
     .ev-body { flex:1; min-width:0; }
     .ev-name { font-weight:800; color:var(--cr-gray-900,#18181b); line-height:1.25; margin:0 0 3px; }
     .ev-meta { font-size:0.8rem; color:var(--cr-gray-500); display:flex; flex-wrap:wrap; gap:3px 10px; }
@@ -52,8 +52,12 @@
     .bdg-sky{background:#F0F9FF;color:#0369a1;border-color:#bae6fd} .bdg-slate{background:var(--cr-gray-100);color:var(--cr-gray-700)}
     .bdg-emerald{background:#ECFDF5;color:#047857;border-color:#a7f3d0} .bdg-green{background:#ECFDF5;color:#047857}
     .ev-org { font-size:0.74rem; color:var(--cr-gray-500); margin-top:7px; display:flex; flex-wrap:wrap; gap:3px 10px; align-items:center; }
-    .ev-links { display:flex; gap:9px; margin-top:7px; }
-    .ev-links a { font-size:0.76rem; font-weight:700; text-decoration:none; color:var(--cr-red); }
+    .ev-links { display:flex; gap:8px; margin-top:9px; }
+    .ev-links a.ico { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border:1px solid var(--cr-gray-200); border-radius:9px; color:var(--cr-gray-500); text-decoration:none; transition:.15s; }
+    .ev-links a.ico:hover { border-color:var(--cr-red); color:var(--cr-red); background:#FFF7F7; }
+    .ev-links a.ico.fb:hover { border-color:#1877f2; color:#1877f2; background:#F0F6FF; }
+    .ev-links a.ico.reg { background:var(--cr-red); border-color:var(--cr-red); color:#fff; }
+    .ev-links a.ico.reg:hover { filter:brightness(.93); background:var(--cr-red); }
     .cal-state { text-align:center; color:var(--cr-gray-500); padding:40px 0; }
     /* Home-style red/pink hero header (matches index.html .hero) */
     .cal-hero { position:relative; overflow:hidden; text-align:center;
