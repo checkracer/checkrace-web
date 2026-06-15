@@ -54,6 +54,7 @@
     if (ev.distance) badges.push(`<span class="bdg bdg-slate">${esc(ev.distance)}</span>`);
     const st = effectiveStatus(ev);
     badges.push(`<span class="bdg ${st === 'ปิดรับสมัคร' ? 'bdg-rose' : 'bdg-green'}">${esc(st)}</span>`);
+    if (ev.source === 'wnd') badges.push('<span class="bdg bdg-slate" title="ข้อมูลจากปฏิทิน วิ่งไหนดี">via วิ่งไหนดี</span>');
 
     const org = hostOrganizerLines(ev).map((o) => `<span>${esc(o.l)}: <b style="color:var(--cr-gray-700)">${esc(o.v)}</b></span>`).join('');
     const links = [];
