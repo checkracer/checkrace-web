@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar Admin — Checkrace</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { background: var(--cr-gray-50); }
+    .admin { max-width: 1150px; margin: 0 auto; padding: var(--space-xl); }
+    .admin-top { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:var(--space-lg); flex-wrap:wrap; }
+    .tabs { display:flex; gap:6px; margin-bottom:var(--space-lg); }
+    .tabs button { border:1px solid var(--cr-gray-300); background:var(--cr-white); padding:8px 16px; border-radius:var(--radius-full); font-family:var(--font-primary); font-weight:700; font-size:0.85rem; cursor:pointer; color:var(--cr-gray-700); }
+    .tabs button.active { background:var(--cr-red); color:#fff; border-color:var(--cr-red); }
+    .admin-grid { display:grid; grid-template-columns:330px 1fr; gap:var(--space-lg); align-items:start; }
+    .panel { background:var(--cr-white); border:1px solid var(--cr-gray-100); border-radius:var(--radius-lg); padding:var(--space-lg); }
+    .row-item { display:flex; justify-content:space-between; gap:8px; padding:9px 8px; border-radius:var(--radius-md); cursor:pointer; border:1px solid transparent; }
+    .row-item:hover { background:var(--cr-gray-50); } .row-item.active { border-color:var(--cr-red); background:rgba(229,57,53,0.05); }
+    .row-item small { color:var(--cr-gray-500); display:block; }
+    label { display:block; font-size:0.8rem; font-weight:600; margin:11px 0 4px; color:var(--cr-gray-700); }
+    input, select, textarea { width:100%; padding:9px 12px; font-family:var(--font-primary); font-size:0.9rem; border:1px solid var(--cr-gray-300); border-radius:var(--radius-md); background:var(--cr-white); }
+    textarea { min-height:70px; resize:vertical; }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; } .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+    .actions { display:flex; gap:10px; margin-top:var(--space-lg); flex-wrap:wrap; }
+    .btn { border:0; padding:10px 18px; border-radius:var(--radius-md); font-family:var(--font-primary); font-weight:700; font-size:0.88rem; cursor:pointer; }
+    .btn-red { background:var(--cr-red); color:#fff; } .btn-ghost { background:var(--cr-gray-100); color:var(--cr-gray-700); } .btn-danger { background:#fee2e2; color:#b91c1c; }
+    .pill { font-size:0.66rem; font-weight:700; padding:2px 8px; border-radius:var(--radius-full); }
+    .pill.on { background:#DCFCE7; color:#166534; } .pill.off { background:var(--cr-gray-100); color:var(--cr-gray-500); }
+    .muted { color:var(--cr-gray-500); font-size:0.85rem; }
+    .msg { padding:9px 14px; border-radius:var(--radius-md); margin-bottom:14px; font-size:0.88rem; font-weight:600; display:none; }
+    .msg.ok { background:#DCFCE7; color:#166534; display:block; } .msg.err { background:#fee2e2; color:#b91c1c; display:block; }
+    .ms-wrap { display:flex; gap:6px; } .ms-wrap select { flex:1; }
+    .ms-add { border:1px solid var(--cr-gray-300); background:var(--cr-gray-50); border-radius:var(--radius-md); padding:0 12px; cursor:pointer; font-weight:700; }
+  </style>
+</head>
+<body>
+  <div class="admin">
+    <div class="admin-top">
+      <div>
+        <h1 style="margin:0;font-size:1.5rem;">🗓️ จัดการปฏิทินวิ่ง</h1>
+        <span class="muted" id="who">—</span>
+      </div>
+      <a href="../calendar.html" class="muted" target="_blank">เปิดหน้าปฏิทิน ↗</a>
+    </div>
+    <div id="msg" class="msg"></div>
+
+    <div class="tabs">
+      <button data-tab="events" class="active">งาน</button>
+      <button data-tab="orgs">ผู้จัด / ออแกไนเซอร์</button>
+      <button data-tab="venues">สถานที่</button>
+    </div>
+
+    <!-- EVENTS -->
+    <div id="tab-events" class="admin-grid">
+      <div class="panel">
+        <button class="btn btn-red" style="width:100%;margin-bottom:12px;" onclick="newEvent()">+ เพิ่มงานใหม่</button>
+        <input id="evSearch" placeholder="ค้นหาชื่องาน / จังหวัด" oninput="renderEventList()" style="margin-bottom:10px;">
+        <div id="evList"></div>
+      </div>
+      <div class="panel" id="evEditor"><p class="muted">เลือกงานจากซ้าย หรือกด “เพิ่มงานใหม่”</p></div>
+    </div>
+
+    <!-- ORGANIZERS -->
+    <div id="tab-orgs" class="admin-grid" style="display:none;">
+      <div class="panel">
+        <button class="btn btn-red" style="width:100%;margin-bottom:12px;" onclick="newOrg()">+ เพิ่มผู้จัด/ออแกไนเซอร์</button>
+        <div id="orgList"></div>
+      </div>
+      <div class="panel" id="orgEditor"><p class="muted">เลือกรายการ หรือกดเพิ่มใหม่</p></div>
+    </div>
+
+    <!-- VENUES -->
+    <div id="tab-venues" class="admin-grid" style="display:none;">
+      <div class="panel">
+        <button class="btn btn-red" style="width:100%;margin-bottom:12px;" onclick="newVenue()">+ เพิ่มสถานที่</button>
+        <div id="venueList"></div>
+      </div>
+      <div class="panel" id="venueEditor"><p class="muted">เลือกรายการ หรือกดเพิ่มใหม่</p></div>
+    </div>
+  </div>
+
+  <script src="js/calendar-admin.js"></script>
+</body>
+</html>

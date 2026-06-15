@@ -45,3 +45,13 @@ export function slugify(s) {
     .replace(/^-+|-+$/g, '')
     .slice(0, 80);
 }
+
+// 16-byte hex id (running-calendar module: events/organizers/venues).
+export function randomId() {
+  const a = new Uint8Array(16);
+  crypto.getRandomValues(a);
+  return [...a].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// lower(trim()) normalized key for master-table dedup (organizers/venues).
+export const norm = (s) => (s || '').toString().trim().toLowerCase();

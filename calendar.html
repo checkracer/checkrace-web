@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ปฏิทินวิ่ง — Checkrace</title>
+  <meta name="description" content="ปฏิทินงานวิ่งทั่วประเทศไทย — วันแข่ง สถานที่ ระยะ ค่าสมัคร และลิงก์สมัคร รวบรวมโดย Checkrace">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .cal-filters { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:18px; }
+    .cal-filters .seg { display:inline-flex; background:var(--cr-gray-100); border-radius:var(--radius-full); padding:3px; flex-wrap:wrap; }
+    .cal-filters .seg button { border:0; background:transparent; padding:6px 13px; border-radius:var(--radius-full); font-family:var(--font-primary); font-weight:700; font-size:0.82rem; color:var(--cr-gray-700); cursor:pointer; }
+    .cal-filters .seg button.active { background:var(--cr-red); color:#fff; }
+    .cal-month-divider { font-weight:800; color:var(--cr-gray-700); margin:26px 0 12px; font-size:1.1rem; border-left:4px solid var(--cr-red); padding-left:10px; }
+    .cal-past-divider { text-align:center; color:var(--cr-gray-500); margin:30px 0 14px; font-weight:700; }
+    .ev-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:16px; }
+    .ev-card { display:flex; gap:13px; background:var(--cr-white); border:1px solid var(--cr-gray-100); border-radius:var(--radius-lg); padding:13px; transition:box-shadow .15s, border-color .15s; }
+    .ev-card:hover { box-shadow:0 8px 24px rgba(0,0,0,.07); border-color:var(--cr-gray-300); }
+    .ev-card.past { opacity:.6; }
+    .ev-thumb { width:78px; height:78px; border-radius:var(--radius-md); object-fit:cover; background:var(--cr-gray-100); flex-shrink:0; }
+    .ev-thumb.ph { display:grid; place-items:center; color:var(--cr-gray-300); font-size:1.6rem; }
+    .ev-body { flex:1; min-width:0; }
+    .ev-name { font-weight:800; color:var(--cr-gray-900,#18181b); line-height:1.25; margin:0 0 3px; }
+    .ev-meta { font-size:0.8rem; color:var(--cr-gray-500); display:flex; flex-wrap:wrap; gap:3px 10px; }
+    .ev-badges { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+    .bdg { font-size:0.66rem; font-weight:700; padding:2px 8px; border-radius:var(--radius-full); border:1px solid transparent; }
+    .bdg-blue{background:#EFF6FF;color:#1d4ed8;border-color:#bfdbfe} .bdg-violet{background:#F5F3FF;color:#6d28d9;border-color:#ddd6fe}
+    .bdg-rose{background:#FFF1F2;color:#be123c;border-color:#fecdd3} .bdg-amber{background:#FFFBEB;color:#b45309;border-color:#fde68a}
+    .bdg-sky{background:#F0F9FF;color:#0369a1;border-color:#bae6fd} .bdg-slate{background:var(--cr-gray-100);color:var(--cr-gray-700)}
+    .bdg-emerald{background:#ECFDF5;color:#047857;border-color:#a7f3d0} .bdg-green{background:#ECFDF5;color:#047857}
+    .ev-org { font-size:0.74rem; color:var(--cr-gray-500); margin-top:7px; display:flex; flex-wrap:wrap; gap:3px 10px; align-items:center; }
+    .ev-links { display:flex; gap:9px; margin-top:7px; }
+    .ev-links a { font-size:0.76rem; font-weight:700; text-decoration:none; color:var(--cr-red); }
+    .cal-state { text-align:center; color:var(--cr-gray-500); padding:40px 0; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo"><img src="assets/logo.svg" alt="Checkrace" class="brand-mark"></a>
+      <div class="nav-links">
+        <a href="index.html" data-i18n="nav_home">หน้าแรก</a>
+        <a href="calendar.html" class="active">ปฏิทินวิ่ง</a>
+        <div class="nav-dropdown" data-page="runner">
+          <button class="nav-dropdown-toggle" data-i18n="nav_for_runner">สำหรับนักวิ่ง</button>
+          <div class="nav-dropdown-menu">
+            <a href="https://run.checkrace.com" target="_blank" rel="noopener" class="external" data-i18n="nav_runner_reg">สมัครวิ่ง</a>
+            <a href="https://vr.checkrace.com" target="_blank" rel="noopener" class="external" data-i18n="nav_runner_vr">Virtual Run</a>
+            <a href="foto.html" data-i18n="nav_runner_foto">ภาพถ่ายนักวิ่ง</a>
+          </div>
+        </div>
+        <div class="nav-dropdown" data-page="organizer">
+          <button class="nav-dropdown-toggle" data-i18n="nav_for_organizer">สำหรับผู้จัดงาน</button>
+          <div class="nav-dropdown-menu">
+            <a href="registration.html" data-i18n="nav_org_reg">ระบบรับสมัคร</a>
+            <a href="timing.html" data-i18n="nav_org_timing">ระบบจับเวลา</a>
+            <a href="check-control.html" data-i18n="nav_org_cc">Check Control</a>
+            <a href="virtual-run.html" data-i18n="nav_org_vr">Virtual Run Platform</a>
+            <a href="sponsors.html" data-i18n="nav_org_sponsors">สปอนเซอร์</a>
+          </div>
+        </div>
+        <a href="https://shop.checkrace.com" target="_blank" rel="noopener" data-i18n="nav_shop">ร้านค้า</a>
+        <div class="nav-dropdown" data-page="about">
+          <button class="nav-dropdown-toggle" data-i18n="nav_about">เกี่ยวกับเรา</button>
+          <div class="nav-dropdown-menu">
+            <a href="about.html" data-i18n="nav_about_us">เกี่ยวกับเรา</a>
+            <a href="dashboard.html" data-i18n="nav_stats">Stats</a>
+            <a href="portfolio.html" data-i18n="nav_portfolio">ผลงาน</a>
+            <a href="blog.html">บทความ</a>
+            <a href="faq.html" data-i18n="nav_faq">คำถามที่พบบ่อย</a>
+            <a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a>
+          </div>
+        </div>
+        <div class="lang-switcher">
+          <button data-lang="th" class="active">TH</button>
+          <button data-lang="en">EN</button>
+          <button data-lang="jp">JP</button>
+          <button data-lang="cn">CN</button>
+        </div>
+      </div>
+      <button class="menu-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <section class="page-header">
+    <div class="container">
+      <span class="section-label" style="color: var(--cr-red-light);">CALENDAR</span>
+      <h1>ปฏิทินวิ่ง</h1>
+      <p>งานวิ่งทั่วประเทศไทย — เลือกเดือน/สัปดาห์ ดูวันแข่ง สถานที่ ระยะ ค่าสมัคร และลิงก์สมัคร</p>
+    </div>
+  </section>
+
+  <!-- CALENDAR -->
+  <section class="section">
+    <div class="container">
+      <div class="cal-filters">
+        <div class="seg" id="calMonths"></div>
+        <div class="seg" id="calWeeks"></div>
+        <div class="seg" id="calTypes">
+          <button data-type="" class="active">ทุกประเภท</button>
+          <button data-type="Road">Road</button>
+          <button data-type="Trail">Trail</button>
+          <button data-type="Virtual">Virtual</button>
+        </div>
+      </div>
+      <div id="calList"></div>
+      <div id="calState" class="cal-state">กำลังโหลดปฏิทิน…</div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand"><a href="index.html" class="navbar-logo"><img src="assets/logo.svg" alt="Checkrace" class="brand-mark"></a><p data-i18n="footer_desc">Running Solution Platform ครบวงจร สำหรับผู้จัดงานวิ่งทั่วประเทศ</p></div>
+        <div><h4 data-i18n="footer_services">บริการ</h4><ul><li><a href="registration.html" data-i18n="nav_registration">ระบบรับสมัคร</a></li><li><a href="virtual-run.html" data-i18n="nav_virtual">Virtual Run</a></li><li><a href="timing.html" data-i18n="nav_timing">ระบบจับเวลา</a></li><li><a href="check-control.html" data-i18n="nav_org_cc">Check Control</a></li><li><a href="foto.html" data-i18n="nav_foto">ภาพถ่ายนักวิ่ง</a></li></ul></div>
+        <div><h4 data-i18n="footer_company">บริษัท</h4><ul><li><a href="about.html" data-i18n="nav_about">เกี่ยวกับเรา</a></li><li><a href="portfolio.html" data-i18n="nav_portfolio">ผลงาน</a></li><li><a href="calendar.html">ปฏิทินวิ่ง</a></li><li><a href="blog.html">บทความ</a></li></ul></div>
+        <div><h4 data-i18n="footer_support">ช่วยเหลือ</h4><ul><li><a href="contact.html" data-i18n="nav_contact">ติดต่อเรา</a></li><li><a href="faq.html" data-i18n="nav_faq">คำถามที่พบบ่อย</a></li></ul></div>
+      </div>
+      <div class="footer-bottom">
+        <span><span data-i18n="footer_rights">© 2026 Checkrace. สงวนลิขสิทธิ์.</span> <span data-i18n="footer_by">โดย Checkrace Co., Ltd.</span></span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/calendar.js"></script>
+  <script>renderCalendar('#calList', '#calState');</script>
+</body>
+</html>
