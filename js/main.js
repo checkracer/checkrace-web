@@ -13,6 +13,7 @@
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
+  initCalendarNav();
   initBlogNav();
   initNavbar();
   initDropdowns();
@@ -22,6 +23,23 @@ document.addEventListener('DOMContentLoaded', () => {
   initI18n();
   initTheme();
 });
+
+/* --- Inject a top-level "ปฏิทินวิ่ง" (Calendar) link into the navbar on every page --- */
+function initCalendarNav() {
+  const navLinks = document.querySelector('.nav-links');
+  if (!navLinks || navLinks.querySelector('a[href="calendar.html"]')) return;
+  const LABELS = { th: 'ปฏิทินวิ่ง', en: 'Calendar', jp: 'カレンダー', cn: '赛历' };
+  const a = document.createElement('a');
+  a.href = 'calendar.html';
+  if (/\/calendar(\.html)?$/.test(location.pathname)) a.className = 'active';
+  const setLabel = () => { a.textContent = LABELS[localStorage.getItem('cr-lang') || 'th'] || LABELS.th; };
+  setLabel();
+  const home = navLinks.querySelector('a[href="index.html"]');
+  if (home) home.insertAdjacentElement('afterend', a);
+  else navLinks.insertAdjacentElement('afterbegin', a);
+  document.querySelectorAll('.lang-switcher button').forEach((btn) =>
+    btn.addEventListener('click', () => setTimeout(setLabel, 0)));
+}
 
 /* --- Inject a "บทความ" (Blog) link into the About dropdown on every page --- */
 function initBlogNav() {
